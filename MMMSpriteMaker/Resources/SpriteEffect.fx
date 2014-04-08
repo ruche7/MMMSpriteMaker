@@ -12,7 +12,25 @@
 // 1:Sprite (dot by dot)
 // 2:Billboard
 // 3:Polygon
-#define SPRMAKE_CONFIG_DRAWTYPE [[ConfigDrawType]]
+#define SPRMAKE_CONFIG_RENDERTYPE [[ConfigRenderType]]
+
+// 0:No
+// 1:Yes
+#define SPRMAKE_CONFIG_RENDERBACK [[ConfigRenderingBack]]
+
+// 0:Disabled
+// 1:Enabled
+// 2:Selectable (MMM only)
+#define SPRMAKE_CONFIG_LIGHT [[ConfigLightSetting]]
+
+// Size per pixel (default = 0.1f)
+#define SPRMAKE_CONFIG_PIXELRATIO [[ConfigPixelRatio]]
+
+// Sprite view width (default = 45.0f)
+#define SPRMAKE_CONFIG_SPRITE_VIEWWIDTH [[ConfigSpriteViewportWidth]]
+
+// Sprite z-order range (default = 100.0f)
+#define SPRMAKE_CONFIG_SPRITE_ZRANGE [[ConfigSpriteZRange]]
 
 // 0:LeftTop
 // 1:MiddleTop
@@ -28,41 +46,27 @@
 // 0:No
 // 1:Yes
 // 2:Selectable (MMM only)
-#define SPRMAKE_CONFIG_FLIP_H [[ConfigFlipHorz]]
+#define SPRMAKE_CONFIG_FLIP_H [[ConfigHorizontalFlipSetting]]
 
 // 0:No
 // 1:Yes
 // 2:Selectable (MMM only)
-#define SPRMAKE_CONFIG_FLIP_V [[ConfigFlipVert]]
-
-// 0:Disabled
-// 1:Enabled
-// 2:Selectable (MMM only)
-#define SPRMAKE_CONFIG_LIGHT [[ConfigLight]]
-
-// Size per pixel (default = 0.01f)
-#define SPRMAKE_CONFIG_PIXELSIZE [[ConfigPixelSize]]
-
-// Sprite view width (default = 45.0f)
-#define SPRMAKE_CONFIG_SPRITE_VIEWWIDTH [[ConfigSpriteViewWidth]]
-
-// Sprite z-order range (default = 1000.0f)
-#define SPRMAKE_CONFIG_SPRITE_ZRANGE [[ConfigSpriteZRange]]
+#define SPRMAKE_CONFIG_FLIP_V [[ConfigVerticalFlipSetting]]
 
 //--------------------------------------
 
-#if SPRMAKE_CONFIG_DRAWTYPE > 2
-    #define SPRMAKE_DRAWTYPE_POLYGON
-#elif SPRMAKE_CONFIG_DRAWTYPE > 1
-    #define SPRMAKE_DRAWTYPE_BILLBOARD
-#elif SPRMAKE_CONFIG_DRAWTYPE > 0
-    #define SPRMAKE_DRAWTYPE_SPRITE
-    #define SPRMAKE_DRAWTYPE_DOTBYDOT
+#if SPRMAKE_CONFIG_RENDERTYPE > 2
+    #define SPRMAKE_RENDER_POLYGON
+#elif SPRMAKE_CONFIG_RENDERTYPE > 1
+    #define SPRMAKE_RENDER_BILLBOARD
+#elif SPRMAKE_CONFIG_RENDERTYPE > 0
+    #define SPRMAKE_RENDER_SPRITE
+    #define SPRMAKE_RENDER_DOTBYDOT
 #else
-    #define SPRMAKE_DRAWTYPE_SPRITE
+    #define SPRMAKE_RENDER_SPRITE
 #endif
 
-#ifdef SPRMAKE_DRAWTYPE_SPRITE
+#ifdef SPRMAKE_RENDER_SPRITE
     #undef SPRMAKE_CONFIG_LIGHT
     #define SPRMAKE_CONFIG_LIGHT 0
 #endif
@@ -75,16 +79,19 @@
 #define SPRMAKE_ATLAS_TEXWIDTH [[AtlasImageWidth]]
 #define SPRMAKE_ATLAS_TEXHEIGHT [[AtlasImageHeight]]
 
-#ifdef SPRMAKE_DRAWTYPE_DOTBYDOT
+#ifdef SPRMAKE_RENDER_DOTBYDOT
 static float2 SprMake_AtlasSizeMul = { 0.1f, 0.1f };
 #else
-static float2 SprMake_AtlasSizeMul = { SPRMAKE_CONFIG_PIXELSIZE, SPRMAKE_CONFIG_PIXELSIZE };
+static float2 SprMake_AtlasSizeMul =
+    {
+        0.1f * SPRMAKE_CONFIG_PIXELRATIO,
+        0.1f * SPRMAKE_CONFIG_PIXELRATIO,
+    };
 #endif
 
 static float2 SprMake_AtlasSizes[SPRMAKE_ATLAS_COUNT] =
     {
 [[AtlasSizes]]
-        //float2( 62,  84) * SprMake_AtlasSizeMul,
     };
 
 static float2 SprMake_AtlasLeftBottomPosMul =
@@ -99,13 +106,11 @@ static float2 SprMake_AtlasUVMul =
 static float2 SprMake_AtlasUVLeftTops[SPRMAKE_ATLAS_COUNT] =
     {
 [[AtlasUVLeftTops]]
-        //float2( 96, 108) * SprMake_AtlasUVMul,
     };
 
 static float2 SprMake_AtlasUVSizes[SPRMAKE_ATLAS_COUNT] =
     {
 [[AtlasUVSizes]]
-        //float2( 62,  84) * SprMake_AtlasUVMul,
     };
 
 //--------------------------------------
@@ -116,7 +121,7 @@ float4x4 WorldViewProjMatrix : WORLDVIEWPROJECTION;
 float4x4 WorldViewMatrix : WORLDVIEW;
 float4x4 WorldMatrix : WORLD;
 
-#ifdef SPRMAKE_DRAWTYPE_BILLBOARD
+#ifdef SPRMAKE_RENDER_BILLBOARD
 // Matrices for billboard
 float4x4 WorldViewMatrixInverse : WORLDVIEWINVERSE;
 static float3x3 BillboardMatrix =
@@ -125,12 +130,12 @@ static float3x3 BillboardMatrix =
         normalize(WorldViewMatrixInverse[1].xyz),
         normalize(WorldViewMatrixInverse[2].xyz),
     };
-#endif // SPRMAKE_DRAWTYPE_BILLBOARD
+#endif // SPRMAKE_RENDER_BILLBOARD
 
-#ifdef SPRMAKE_DRAWTYPE_SPRITE
+#ifdef SPRMAKE_RENDER_SPRITE
 
 float2 ViewportSize : VIEWPORTPIXELSIZE;
-#ifdef SPRMAKE_DRAWTYPE_DOTBYDOT
+#ifdef SPRMAKE_RENDER_DOTBYDOT
 static float4x4 ProjMatrix =
     {
         2.0f / ViewportSize.x, 0, 0, 0,
@@ -138,7 +143,7 @@ static float4x4 ProjMatrix =
         0,                     0, 1, 0,
         0,                     0, 0, 1,
     };
-#else // SPRMAKE_DRAWTYPE_DOTBYDOT
+#else // SPRMAKE_RENDER_DOTBYDOT
 static float ProjMatrix11 = 2.0f / SPRMAKE_CONFIG_SPRITE_VIEWWIDTH;
 static float ViewportRatio = ViewportSize.x / ViewportSize.y;
 static float4x4 ProjMatrix =
@@ -148,13 +153,13 @@ static float4x4 ProjMatrix =
         0,                            0, 1, 0,
         0,                            0, 0, 1,
     };
-#endif // SPRMAKE_DRAWTYPE_DOTBYDOT
+#endif // SPRMAKE_RENDER_DOTBYDOT
 
-#else // SPRMAKE_DRAWTYPE_SPRITE
+#else // SPRMAKE_RENDER_SPRITE
 
 float4x4 ProjMatrix : PROJECTION;
 
-#endif // SPRMAKE_DRAWTYPE_SPRITE
+#endif // SPRMAKE_RENDER_SPRITE
 
 float3 CameraPosition : POSITION < string Object = "Camera"; >;
 
@@ -239,9 +244,9 @@ sampler ObjTexSampler =
     };
 
 // Accessory
-#ifdef SPRMAKE_DRAWTYPE_SPRITE
+#ifdef SPRMAKE_RENDER_SPRITE
 float3 AccPos : CONTROLOBJECT < string name = "(self)"; >;
-#endif // SPRMAKE_DRAWTYPE_SPRITE
+#endif // SPRMAKE_RENDER_SPRITE
 float AccTrans : CONTROLOBJECT < string name = "(self)"; string item = "Tr"; >;
 
 //--------------------------------------
@@ -317,28 +322,12 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 
     // select atlas
 [[SelectAtlasCode]]
-#if 0
-    if (SprMake_AtlasIndex >= 2)
-    {
-        Out.Size = SprMake_AtlasSizes[2];
-        Out.LeftTopUV = SprMake_AtlasUVLeftTops[2];
-        Out.UVSize = SprMake_AtlasUVSizes[2];
-    }
-    else if (SprMake_AtlasIndex >= 1)
-    {
-        Out.Size = SprMake_AtlasSizes[1];
-        Out.LeftTopUV = SprMake_AtlasUVLeftTops[1];
-        Out.UVSize = SprMake_AtlasUVSizes[1];
-    }
-    else
-    {
-        Out.Size = SprMake_AtlasSizes[0];
-        Out.LeftTopUV = SprMake_AtlasUVLeftTops[0];
-        Out.UVSize = SprMake_AtlasUVSizes[0];
-    }
-#endif // 0
 
     Out.LeftBottomPos = Out.Size * SprMake_AtlasLeftBottomPosMul;
+
+#if SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
+    bool rotated = (Out.UVSize.x < 0);
+#endif // SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
 
     // flip horizontal
 #if SPRMAKE_CONFIG_FLIP_H != 0
@@ -346,15 +335,15 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
     if (SprMake_FlipHorz)
     {
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_H > 1
-        if (Out.UVSize.x >= 0)
-        {
-            Out.LeftTopUV.x += Out.UVSize.x;
-            Out.UVSize.x = -Out.UVSize.x;
-        }
-        else
+        if (rotated)
         {
             Out.LeftTopUV.y += Out.UVSize.y;
             Out.UVSize.y = -Out.UVSize.y;
+        }
+        else
+        {
+            Out.LeftTopUV.x += Out.UVSize.x;
+            Out.UVSize.x = -Out.UVSize.x;
         }
 #if defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_H > 1
     }
@@ -367,15 +356,15 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
     if (SprMake_FlipVert)
     {
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_V > 1
-        if (Out.UVSize.x >= 0)
-        {
-            Out.LeftTopUV.y += Out.UVSize.y;
-            Out.UVSize.y = -Out.UVSize.y;
-        }
-        else
+        if (rotated)
         {
             Out.LeftTopUV.x += Out.UVSize.x;
             Out.UVSize.x = -Out.UVSize.x;
+        }
+        else
+        {
+            Out.LeftTopUV.y += Out.UVSize.y;
+            Out.UVSize.y = -Out.UVSize.y;
         }
 #if defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_V > 1
     }
@@ -390,13 +379,13 @@ float4 SprMake_CalcVertexPosition(float4 Pos, float3 Eye)
 {
     float4 Out = Pos;
 
-#ifdef SPRMAKE_DRAWTYPE_SPRITE
+#ifdef SPRMAKE_RENDER_SPRITE
 
     Out = mul(Out, WorldMatrix);
     Out = mul(Out, ProjMatrix);
     Out.z = AccPos.z / SPRMAKE_CONFIG_SPRITE_ZRANGE;
 
-#else // SPRMAKE_DRAWTYPE_SPRITE
+#else // SPRMAKE_RENDER_SPRITE
 
 #ifdef MIKUMIKUMOVING
     // for MikuMikuMoving
@@ -414,7 +403,7 @@ float4 SprMake_CalcVertexPosition(float4 Pos, float3 Eye)
     Out = mul(Out, WorldViewProjMatrix);
 #endif // MIKUMIKUMOVING
 
-#endif // SPRMAKE_DRAWTYPE_SPRITE
+#endif // SPRMAKE_RENDER_SPRITE
 
     return Out;
 }
@@ -424,24 +413,24 @@ VS_OUTPUT SprMake_VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 Tex :
 {
     VS_OUTPUT Out = (VS_OUTPUT)0;
 
-    static SPRMAKE_ATLAS_INFO AtlasInfo = SprMake_GetAtlasInfo();
-    Pos.xy = AtlasInfo.LeftBottomPos + (Pos.xy * AtlasInfo.Size);
-    Tex = AtlasInfo.LeftTopUV + (Tex * AtlasInfo.UVSize);
+    static SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
+    Pos.xy = atlasInfo.LeftBottomPos + (Pos.xy * atlasInfo.Size);
+    Tex = atlasInfo.LeftTopUV + (Tex * atlasInfo.UVSize);
 
-#ifdef SPRMAKE_DRAWTYPE_BILLBOARD
+#ifdef SPRMAKE_RENDER_BILLBOARD
     Pos.xyz = mul(Pos.xyz, BillboardMatrix);
-#endif // SPRMAKE_DRAWTYPE_BILLBOARD
+#endif // SPRMAKE_RENDER_BILLBOARD
 
-    float3 Eye = CameraPosition - mul(Pos.xyz, WorldMatrix);
+    float3 eye = CameraPosition - mul(Pos.xyz, WorldMatrix);
 
-    Out.Pos = SprMake_CalcVertexPosition(Pos, Eye);
+    Out.Pos = SprMake_CalcVertexPosition(Pos, eye);
     Out.Normal = normalize(mul(Normal, (float3x3)WorldMatrix));
     Out.Tex = Tex;
 
 #if SPRMAKE_CONFIG_LIGHT == 0
     Out.Color.rgb = float3(1, 1, 1);
 #else // SPRMAKE_CONFIG_LIGHT == 0
-    Out.Eye = Eye;
+    Out.Eye = eye;
 
 #ifdef MIKUMIKUMOVING
     // for MikuMikuMoving
@@ -518,17 +507,17 @@ float4 SprMake_PS(VS_OUTPUT IN, uniform bool useSelfShadow) : COLOR0
             Color.rgb *= MMM_GetSelfShadowToonColor(MaterialToon, IN.Normal, IN.SS_UV1, IN.SS_UV2, IN.SS_UV3, false, false);
         }
 
-        float3 Specular = 0;
-        float3 HalfVector;
+        float3 specular = 0;
+        float3 halfVector;
         for (int i = 0; i < 3; ++i)
         {
             if (LightEnables[i])
             {
-                HalfVector = normalize(normalize(IN.Eye) + -LightDirections[i]);
-                Specular += pow(max(0, dot(HalfVector, normalize(IN.Normal))), SpecularPower) * SpecularColors[i];
+                halfVector = normalize(normalize(IN.Eye) + -LightDirections[i]);
+                specular += pow(max(0, dot(halfVector, normalize(IN.Normal))), SpecularPower) * SpecularColors[i];
             }
         }
-        Color.rgb += Specular;
+        Color.rgb += specular;
 #if SPRMAKE_CONFIG_LIGHT > 1
     }
 #endif // SPRMAKE_CONFIG_LIGHT > 1
@@ -552,6 +541,13 @@ technique MainTec < string MMDPass = "object"; bool UseTexture = true; bool UseT
 {
     pass DrawObject
     {
+#ifdef SPRMAKE_RENDER_SPRITE
+        ZEnable = FALSE;
+#endif // SPRMAKE_RENDER_SPRITE
+#if SPRMAKE_CONFIG_RENDERBACK > 0
+        CullMode = NONE;
+#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+
         VertexShader = compile vs_2_0 SprMake_VS(false);
         PixelShader  = compile ps_2_0 SprMake_PS(false);
     }
@@ -565,12 +561,18 @@ technique MainTecSS < string MMDPass = "object_ss"; bool UseTexture = true; bool
 {
     pass DrawObject
     {
+#ifdef SPRMAKE_RENDER_SPRITE
+        ZEnable = FALSE;
+#endif // SPRMAKE_RENDER_SPRITE
+#if SPRMAKE_CONFIG_RENDERBACK > 0
+        CullMode = NONE;
+#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+
         VertexShader = compile vs_2_0 SprMake_VS(true);
         PixelShader  = compile ps_2_0 SprMake_PS(true);
     }
 }
 
-technique EdgeTec < string MMDPass = "edge"; bool UseToon = false; >
-{
-    // no rendering
-}
+technique EdgeTec < string MMDPass = "edge"; bool UseToon = false; > { }
+technique ShadowTec < string MMDPass = "shadow"; bool UseToon = false; > { }
+technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; > { }

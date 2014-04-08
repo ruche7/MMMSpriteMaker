@@ -138,13 +138,13 @@ Mesh {
  1.0; 1.0; 0.0;,
  1.0; 0.0; 0.0;,
  0.0; 0.0; 0.0;;
- [[MeshFaceCount]];
-[[MeshFaces]];
+ 1;
+ 4;0,1,2,3;;
 
  MeshMaterialList {
   1;
-  [[MeshFaceCount]];
-[[MeshFaceMaterials]];
+  1;
+  0;
   Material {
    1.000000;1.000000;1.000000;1.000000;;
    0.000000;
@@ -159,8 +159,8 @@ Mesh {
   2;
   0.000000;0.000000;-1.000000;,
   0.000000;0.000000;1.000000;,
-  [[MeshFaceCount]];
-[[MeshFaceNormals]];
+  1;
+  4;0,0,0,0;;
  }
  MeshTextureCoords {
   4;

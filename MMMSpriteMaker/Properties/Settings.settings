@@ -5,5 +5,32 @@
     <Setting Name="IsUpgraded" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="RenderType" Type="MMMSpriteMaker.ImageRenderType" Scope="User">
+      <Value Profile="(Default)">Sprite</Value>
+    </Setting>
+    <Setting Name="RenderingBack" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="BasePoint" Type="MMMSpriteMaker.ImageBasePoint" Scope="User">
+      <Value Profile="(Default)">Center</Value>
+    </Setting>
+    <Setting Name="HorizontalFlipSetting" Type="MMMSpriteMaker.ImageFlipSetting" Scope="User">
+      <Value Profile="(Default)">NotFlip</Value>
+    </Setting>
+    <Setting Name="VerticalFlipSetting" Type="MMMSpriteMaker.ImageFlipSetting" Scope="User">
+      <Value Profile="(Default)">NotFlip</Value>
+    </Setting>
+    <Setting Name="LightSetting" Type="MMMSpriteMaker.LightSetting" Scope="User">
+      <Value Profile="(Default)">Disabled</Value>
+    </Setting>
+    <Setting Name="PixelRatio" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.1</Value>
+    </Setting>
+    <Setting Name="SpriteViewportWidth" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">45</Value>
+    </Setting>
+    <Setting Name="SpriteZRange" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -13,7 +13,7 @@ namespace MMMSpriteMaker.Properties {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -32,6 +32,114 @@ namespace MMMSpriteMaker.Properties {
             }
             set {
                 this["IsUpgraded"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Sprite")]
+        public global::MMMSpriteMaker.ImageRenderType RenderType {
+            get {
+                return ((global::MMMSpriteMaker.ImageRenderType)(this["RenderType"]));
+            }
+            set {
+                this["RenderType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RenderingBack {
+            get {
+                return ((bool)(this["RenderingBack"]));
+            }
+            set {
+                this["RenderingBack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Center")]
+        public global::MMMSpriteMaker.ImageBasePoint BasePoint {
+            get {
+                return ((global::MMMSpriteMaker.ImageBasePoint)(this["BasePoint"]));
+            }
+            set {
+                this["BasePoint"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("NotFlip")]
+        public global::MMMSpriteMaker.ImageFlipSetting HorizontalFlipSetting {
+            get {
+                return ((global::MMMSpriteMaker.ImageFlipSetting)(this["HorizontalFlipSetting"]));
+            }
+            set {
+                this["HorizontalFlipSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("NotFlip")]
+        public global::MMMSpriteMaker.ImageFlipSetting VerticalFlipSetting {
+            get {
+                return ((global::MMMSpriteMaker.ImageFlipSetting)(this["VerticalFlipSetting"]));
+            }
+            set {
+                this["VerticalFlipSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Disabled")]
+        public global::MMMSpriteMaker.LightSetting LightSetting {
+            get {
+                return ((global::MMMSpriteMaker.LightSetting)(this["LightSetting"]));
+            }
+            set {
+                this["LightSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.1")]
+        public float PixelRatio {
+            get {
+                return ((float)(this["PixelRatio"]));
+            }
+            set {
+                this["PixelRatio"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("45")]
+        public float SpriteViewportWidth {
+            get {
+                return ((float)(this["SpriteViewportWidth"]));
+            }
+            set {
+                this["SpriteViewportWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public float SpriteZRange {
+            get {
+                return ((float)(this["SpriteZRange"]));
+            }
+            set {
+                this["SpriteZRange"] = value;
             }
         }
     }

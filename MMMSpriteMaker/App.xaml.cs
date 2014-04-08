@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using Prop = MMMSpriteMaker.Properties;
 
@@ -18,29 +13,17 @@ namespace MMMSpriteMaker
     public partial class App : Application
     {
         /// <summary>
-        /// アプリケーション名。
+        /// OKボタン付きのダイアログを表示する。
         /// </summary>
-        public static readonly string Name = GetAssemblyTitle() ?? "MMMSpriteMaker";
-
-        /// <summary>
-        /// アプリケーション設定を取得する。
-        /// </summary>
-        internal static Prop.Settings Settings
+        /// <param name="message">表示メッセージ。</param>
+        /// <param name="image">表示アイコン。</param>
+        private static void ShowAlert(string message, MessageBoxImage image)
         {
-            get { return Prop.Settings.Default; }
-        }
-
-        /// <summary>
-        /// アセンブリタイトルを取得する。
-        /// </summary>
-        /// <returns>アセンブリタイトル。いわゆるアプリケーション名。</returns>
-        private static string GetAssemblyTitle()
-        {
-            var attr =
-                Attribute.GetCustomAttribute(
-                    Assembly.GetExecutingAssembly(),
-                    typeof(AssemblyTitleAttribute)) as AssemblyTitleAttribute;
-            return (attr == null) ? null : attr.Title;
+            MessageBox.Show(
+                message,
+                Prop.Resources.Dialog_Caption,
+                MessageBoxButton.OK,
+                image);
         }
 
         /// <summary>
@@ -50,10 +33,18 @@ namespace MMMSpriteMaker
             new Mutex(false, "{888E7C5E-D045-4537-8609-815A19AB268C}");
 
         /// <summary>
-        /// メインウィンドウの多重起動防止用のミューテクス。
+        /// 設定ウィンドウの多重起動防止用のミューテクス。
         /// </summary>
         private Mutex mutexForWindow =
             new Mutex(false, "{876286C1-80D7-44FB-B3AF-54AE29125810}");
+
+        /// <summary>
+        /// アプリケーション設定を取得する。
+        /// </summary>
+        private Prop.Settings Config
+        {
+            get { return Prop.Settings.Default; }
+        }
 
         /// <summary>
         /// アプリケーション設定をプロセス間排他で初期化する。
@@ -65,14 +56,14 @@ namespace MMMSpriteMaker
                 mutexForSettingFile.WaitOne();
 
                 // 読み込み
-                Settings.Reload();
+                Config.Reload();
 
                 // 未アップグレードの場合のみアップグレードする
-                if (!Settings.IsUpgraded)
+                if (!Config.IsUpgraded)
                 {
-                    Settings.Upgrade();
-                    Settings.IsUpgraded = true;
-                    Settings.Save();
+                    Config.Upgrade();
+                    Config.IsUpgraded = true;
+                    Config.Save();
                 }
             }
             finally
@@ -81,7 +72,7 @@ namespace MMMSpriteMaker
             }
 
             // 設定値が変更されたら即保存するようにする
-            Settings.PropertyChanged += Settings_PropertyChanged;
+            Config.PropertyChanged += (sender, e) => SaveSettings();
         }
 
         /// <summary>
@@ -94,7 +85,7 @@ namespace MMMSpriteMaker
                 mutexForSettingFile.WaitOne();
 
                 // 保存
-                Settings.Save();
+                Config.Save();
             }
             finally
             {
@@ -103,12 +94,24 @@ namespace MMMSpriteMaker
         }
 
         /// <summary>
-        /// アプリケーション設定値が変更された時に呼び出される。
+        /// プログラム引数を処理する。
         /// </summary>
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        /// <param name="args"></param>
+        private void ProcessArgs(string[] args)
         {
-            // 即ファイルへ保存
-            SaveSettings();
+            // 引数からファイルを抜き出す
+            var files = args.Where(arg => File.Exists(arg)).ToArray();
+            if (files.Length <= 0)
+            {
+                ShowAlert(Prop.Resources.Dialog_ArgsFail, MessageBoxImage.Error);
+                Shutdown(1);
+                return;
+            }
+
+            // 作成ウィンドウ起動
+            var makerWindow =
+                new View.MakerWindow(new ViewModel.MakerViewModel(Config, files));
+            makerWindow.Show();
         }
 
         /// <summary>
@@ -122,26 +125,22 @@ namespace MMMSpriteMaker
             // 引数があればそれらを処理して終了
             if (e.Args.Length > 0)
             {
-                // TODO: 引数のファイルを処理
-
-                Shutdown(0);
+                ProcessArgs(e.Args);
                 return;
             }
 
-            // メインウィンドウの多重起動防止
+            // 設定ウィンドウの多重起動防止
             if (!mutexForWindow.WaitOne(0, false))
             {
-                MessageBox.Show(
-                    Prop.Resources.Dialog_MainWindowMultiBootFail,
-                    Name,
-                    MessageBoxButton.OK,
+                ShowAlert(
+                    Prop.Resources.Dialog_ConfigWindowMultiBootFail,
                     MessageBoxImage.Warning);
                 Shutdown(1);
                 return;
             }
 
-            // メインウィンドウ起動
-            (new MainWindow()).Show();
+            // 設定ウィンドウ起動
+            (new View.ConfigWindow()).Show();
         }
 
         /// <summary>
@@ -149,9 +148,6 @@ namespace MMMSpriteMaker
         /// </summary>
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            // 設定値変更時の処理をやめる
-            Settings.PropertyChanged -= Settings_PropertyChanged;
-
             // ミューテクス破棄
             if (mutexForWindow != null)
             {

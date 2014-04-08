@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
-namespace MMMSpriteMaker
+namespace MMMSpriteMaker.IO
 {
     /// <summary>
     /// テクスチャアトラスを定義するクラス。
@@ -96,7 +96,7 @@ namespace MMMSpriteMaker
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        private TextureAtlas(
+        protected TextureAtlas(
             string imageFileName,
             Size imageSize,
             IEnumerable<Frame> frames)

@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace MMMSpriteMaker
+namespace MMMSpriteMaker.IO
 {
     /// <summary>
     /// 雛形文字列の置換用プロパティであることを示す属性。

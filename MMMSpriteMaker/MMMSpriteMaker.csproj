@@ -33,10 +33,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -54,25 +57,41 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Properties\Settings.cs" />
-    <Compile Include="TemplateReplaceIdAttribute.cs" />
-    <Compile Include="TextureAtlas.cs" />
-    <Compile Include="TextureAtlas.FromPlist.cs">
+    <Compile Include="IO\EffectFileMaker.cs" />
+    <Compile Include="ImageFlipSetting.cs" />
+    <Compile Include="ImageBasePoint.cs" />
+    <Compile Include="ImageRenderType.cs" />
+    <Compile Include="ImageRenderTypeFlags.cs" />
+    <Compile Include="ImageRenderTypeFlagsAttribute.cs" />
+    <Compile Include="SpriteMaker.cs" />
+    <Compile Include="ViewModel\MakerViewModel.cs" />
+    <Compile Include="LightSetting.cs" />
+    <Compile Include="IO\TemplateReplaceIdAttribute.cs" />
+    <Compile Include="IO\TextureAtlas.cs" />
+    <Compile Include="IO\TextureAtlas.FromPlist.cs">
       <DependentUpon>TextureAtlas.cs</DependentUpon>
     </Compile>
-    <Compile Include="XFileMaker.cs" />
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <Compile Include="SettingsExtension.cs" />
+    <Compile Include="ViewModel\ConfigViewModel.cs" />
+    <Compile Include="View\ConfigWindow.xaml.cs">
+      <DependentUpon>ConfigWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IO\AccessoryFileMaker.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
+    <Compile Include="View\MakerWindow.xaml.cs">
+      <DependentUpon>MakerWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\ConfigWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MakerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -94,17 +113,23 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.ja.resx" />
     <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="res\SpriteAccessory.x" />
+    <None Include="Resources\SpriteAccessory.x" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\SpriteEffect.fx" />
+    <None Include="Resources\SpriteEffect.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ruche.wpf\ruche.wpf.csproj">
+      <Project>{a5dc2bbd-74fd-45df-9352-d017ae45b02d}</Project>
+      <Name>ruche.wpf</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

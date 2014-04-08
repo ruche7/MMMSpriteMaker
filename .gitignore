@@ -1,3 +1,5 @@
 *.suo
 /MMMSpriteMaker/bin
 /MMMSpriteMaker/obj
+/ruche.wpf/bin
+/ruche.wpf/obj

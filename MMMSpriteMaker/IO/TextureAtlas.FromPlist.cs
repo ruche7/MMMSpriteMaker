@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Linq;
 
-namespace MMMSpriteMaker
+namespace MMMSpriteMaker.IO
 {
     partial class TextureAtlas
     {
@@ -67,7 +67,7 @@ namespace MMMSpriteMaker
 			int index = 0;
 			return
 				elements
-					.GroupBy(e => index++ / 2)
+					.GroupBy(_ => index++ / 2)
 					.ToDictionary(
 						x => x.ElementAt(0).Value,
 						x => ParsePlistValue(x.ElementAt(1)));
@@ -105,9 +105,8 @@ namespace MMMSpriteMaker
                 break;
             }
 
-            throw new ArgumentException(
-                "Plist value type '" + value.Name + "' is not supported.",
-                "value");
+            throw new NotSupportedException(
+                "Plist value type '" + value.Name + "' is not supported.");
         }
 
 		/// <summary>
