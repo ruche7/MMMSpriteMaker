@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ruche.mmm.tools.spriteMaker;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using ruche.mmm.tools.spriteMaker;
 using Prop = MMMSpriteMaker.Properties;
 
 namespace MMMSpriteMaker

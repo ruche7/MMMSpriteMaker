@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ruche.mmm.tools.spriteMaker.resources;
+﻿using ruche.mmm.tools.spriteMaker.resources;
+using System.ComponentModel.DataAnnotations;
 
 namespace ruche.mmm.tools.spriteMaker
 {

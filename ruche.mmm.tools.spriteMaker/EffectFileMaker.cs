@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ruche.mmm.tools.spriteMaker.resources;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ruche.mmm.tools.spriteMaker.resources;
 
 namespace ruche.mmm.tools.spriteMaker
 {
