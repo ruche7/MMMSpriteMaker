@@ -6,7 +6,7 @@
     xmlns:prop="clr-namespace:MMMSpriteMaker.Properties"
     x:Class="MMMSpriteMaker.View.MakerWindow"
     Title="{Binding ViewCaption}"
-    Width="440" Height="260"
+    Width="480" Height="320"
     MinWidth="280" MinHeight="200">
     <Window.CommandBindings>
         <CommandBinding Command="Close" Executed="OnCloseCommandExecuted" />
