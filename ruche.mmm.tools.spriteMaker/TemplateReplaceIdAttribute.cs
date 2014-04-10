@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace MMMSpriteMaker.IO
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// 雛形文字列の置換用プロパティであることを示す属性。
@@ -12,7 +12,7 @@ namespace MMMSpriteMaker.IO
     /// 雛形文字列中の "[[SomeProp]]" という文字列をプロパティの値で置換する。
     /// </remarks>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public sealed class TemplateReplaceIdAttribute : Attribute
+    internal sealed class TemplateReplaceIdAttribute : Attribute
     {
         /// <summary>
         /// 文字列の置換処理を実行する。

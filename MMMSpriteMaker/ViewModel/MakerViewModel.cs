@@ -1,4 +1,5 @@
 ﻿using MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker;
 using ruche.wpf.viewModel;
 using System;
 using System.Collections.Generic;
@@ -20,17 +21,17 @@ namespace MMMSpriteMaker.ViewModel
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        /// <param name="config">アプリケーション設定。</param>
+        /// <param name="effectFileConfig">エフェクトファイル設定。</param>
         /// <param name="textureAtlasFilePathes">
         /// テクスチャアトラスファイルパス列挙。
         /// </param>
         public MakerViewModel(
-            Settings config,
+            EffectFileConfig effectFileConfig,
             IEnumerable<string> textureAtlasFilePathes)
         {
-            if (config == null)
+            if (effectFileConfig == null)
             {
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException("effectFileConfig");
             }
             if (textureAtlasFilePathes == null)
             {
@@ -43,7 +44,7 @@ namespace MMMSpriteMaker.ViewModel
                     .Where(p => !string.IsNullOrWhiteSpace(p))
                     .Select(p => Path.GetFullPath(p))
                     .Distinct() // あまりアテにならないが一応重複を弾く
-                    .Select(p => new SpriteMaker(config, p))
+                    .Select(p => new SpriteMaker(effectFileConfig, p))
                     .ToList()
                     .AsReadOnly();
             if (Makers.Count <= 0)

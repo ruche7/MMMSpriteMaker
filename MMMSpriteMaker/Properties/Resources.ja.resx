@@ -156,63 +156,6 @@
   <data name="Dialog_ConfigWindowMultiBootFail" xml:space="preserve">
     <value>設定画面を複数開くことはできません。</value>
   </data>
-  <data name="Enum_ImageBasePoint_Center" xml:space="preserve">
-    <value>中心</value>
-  </data>
-  <data name="Enum_ImageBasePoint_LeftBottom" xml:space="preserve">
-    <value>左下</value>
-  </data>
-  <data name="Enum_ImageBasePoint_LeftMiddle" xml:space="preserve">
-    <value>左</value>
-  </data>
-  <data name="Enum_ImageBasePoint_LeftTop" xml:space="preserve">
-    <value>左上</value>
-  </data>
-  <data name="Enum_ImageBasePoint_MiddleBottom" xml:space="preserve">
-    <value>下</value>
-  </data>
-  <data name="Enum_ImageBasePoint_MiddleTop" xml:space="preserve">
-    <value>上</value>
-  </data>
-  <data name="Enum_ImageBasePoint_RightBottom" xml:space="preserve">
-    <value>右下</value>
-  </data>
-  <data name="Enum_ImageBasePoint_RightMiddle" xml:space="preserve">
-    <value>右</value>
-  </data>
-  <data name="Enum_ImageBasePoint_RightTop" xml:space="preserve">
-    <value>右上</value>
-  </data>
-  <data name="Enum_ImageFlipSetting_Flip" xml:space="preserve">
-    <value>反転する</value>
-  </data>
-  <data name="Enum_ImageFlipSetting_NotFlip" xml:space="preserve">
-    <value>反転しない</value>
-  </data>
-  <data name="Enum_ImageFlipSetting_Selectable" xml:space="preserve">
-    <value>MMM上で選択する</value>
-  </data>
-  <data name="Enum_ImageRenderType_Billboard" xml:space="preserve">
-    <value>ビルボード</value>
-  </data>
-  <data name="Enum_ImageRenderType_DotByDotSprite" xml:space="preserve">
-    <value>スプライト(dot by dot)</value>
-  </data>
-  <data name="Enum_ImageRenderType_Polygon" xml:space="preserve">
-    <value>板ポリゴン</value>
-  </data>
-  <data name="Enum_ImageRenderType_Sprite" xml:space="preserve">
-    <value>スプライト</value>
-  </data>
-  <data name="Enum_LightSetting_Disabled" xml:space="preserve">
-    <value>無効</value>
-  </data>
-  <data name="Enum_LightSetting_Enabled" xml:space="preserve">
-    <value>有効</value>
-  </data>
-  <data name="Enum_LightSetting_Selectable" xml:space="preserve">
-    <value>MMM上で選択する</value>
-  </data>
   <data name="ConfigWindow_Close" xml:space="preserve">
     <value>閉じる</value>
   </data>
@@ -248,15 +191,6 @@
   </data>
   <data name="MakerWindow_Close" xml:space="preserve">
     <value>閉じる</value>
-  </data>
-  <data name="SpriteMakerFormat_AccessoryFileFail" xml:space="preserve">
-    <value>アクセサリファイル'{0}' の書き出しに失敗しました。</value>
-  </data>
-  <data name="SpriteMakerFormat_BadAtlasFile" xml:space="preserve">
-    <value>ファイル '{0}' をテクスチャアトラスファイルとして読み込めませんでした。</value>
-  </data>
-  <data name="SpriteMakerFormat_EffectFileFail" xml:space="preserve">
-    <value>エフェクトファイル'{0}' の書き出しに失敗しました。</value>
   </data>
   <data name="MakerWindow_AutoClose" xml:space="preserve">
     <value>成功時に自動で閉じる</value>

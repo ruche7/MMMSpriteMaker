@@ -57,26 +57,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="IO\EffectFileMaker.cs" />
-    <Compile Include="ImageFlipSetting.cs" />
-    <Compile Include="ImageBasePoint.cs" />
-    <Compile Include="ImageRenderType.cs" />
-    <Compile Include="ImageRenderTypeFlags.cs" />
-    <Compile Include="ImageRenderTypeFlagsAttribute.cs" />
-    <Compile Include="SpriteMaker.cs" />
-    <Compile Include="ViewModel\MakerViewModel.cs" />
-    <Compile Include="LightSetting.cs" />
-    <Compile Include="IO\TemplateReplaceIdAttribute.cs" />
-    <Compile Include="IO\TextureAtlas.cs" />
-    <Compile Include="IO\TextureAtlas.FromPlist.cs">
-      <DependentUpon>TextureAtlas.cs</DependentUpon>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SettingsExtension.cs" />
+    <Compile Include="ViewModel\MakerViewModel.cs" />
     <Compile Include="ViewModel\ConfigViewModel.cs" />
     <Compile Include="View\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="IO\AccessoryFileMaker.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -102,30 +92,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.ja.resx" />
-    <None Include="Properties\Settings.settings">
-      <Generator>PublicSettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\SpriteAccessory.x" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SpriteEffect.fx" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\ruche.mmm.tools.spriteMaker\ruche.mmm.tools.spriteMaker.csproj">
+      <Project>{f2c2a23e-5ca6-47db-8ae0-84dd36fb28c9}</Project>
+      <Name>ruche.mmm.tools.spriteMaker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ruche.wpf\ruche.wpf.csproj">
       <Project>{a5dc2bbd-74fd-45df-9352-d017ae45b02d}</Project>
       <Name>ruche.wpf</Name>

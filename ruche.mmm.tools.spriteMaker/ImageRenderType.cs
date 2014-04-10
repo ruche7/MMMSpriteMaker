@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Prop = MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker.resources;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// イメージの描画方法を表す列挙。
@@ -13,7 +13,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageRenderType_Sprite",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
             ImageRenderTypeFlags.UsePixelRatio |
             ImageRenderTypeFlags.UseViewportWidth |
@@ -25,7 +25,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageRenderType_DotByDotSprite",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(ImageRenderTypeFlags.UseZRange)]
         DotByDotSprite = 1,
 
@@ -34,7 +34,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageRenderType_Billboard",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
             ImageRenderTypeFlags.CanUseLight |
             ImageRenderTypeFlags.UsePixelRatio)]
@@ -45,7 +45,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageRenderType_Polygon",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
             ImageRenderTypeFlags.CanRenderBack |
             ImageRenderTypeFlags.CanUseLight |

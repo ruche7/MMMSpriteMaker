@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Prop = MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker.resources;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// イメージの基準点位置を表す列挙。
@@ -13,7 +13,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_LeftTop",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         LeftTop = 0,
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_MiddleTop",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         MiddleTop = 1,
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_RightTop",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         RightTop = 2,
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_LeftMiddle",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         LeftMiddle = 3,
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_Center",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         Center = 4,
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_RightMiddle",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         RightMiddle = 5,
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_LeftBottom",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         LeftBottom = 6,
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_MiddleBottom",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         MiddleBottom = 7,
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageBasePoint_RightBottom",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         RightBottom = 8,
     }
 }

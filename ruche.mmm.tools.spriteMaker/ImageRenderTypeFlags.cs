@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// ImageRenderType 列挙値に紐付くメタ情報の組み合わせを定義する列挙。

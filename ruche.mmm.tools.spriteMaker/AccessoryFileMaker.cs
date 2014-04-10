@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Prop = MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker.resources;
 
-namespace MMMSpriteMaker.IO
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// アクセサリファイルを作成するクラス。
@@ -37,7 +37,7 @@ namespace MMMSpriteMaker.IO
             }
 
             // 雛形文字列取得
-            var code = Prop.Resources.SpriteAccessory;
+            var code = Resources.SpriteAccessory;
 
             // 置換
             code = TemplateReplaceIdAttribute.Replace(this, code);

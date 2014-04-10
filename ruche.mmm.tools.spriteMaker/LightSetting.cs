@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Prop = MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker.resources;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// ライトとセルフシャドウの有効設定を表す列挙。
@@ -13,7 +13,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_LightSetting_Disabled",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         Disabled = 0,
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_LightSetting_Enabled",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         Enabled = 1,
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_LightSetting_Selectable",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         Selectable = 2,
     }
 }

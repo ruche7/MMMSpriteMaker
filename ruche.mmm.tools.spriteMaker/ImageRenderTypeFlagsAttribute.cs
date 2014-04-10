@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// ImageRenderType 列挙値に紐付くメタ情報の組み合わせを指定する属性。

@@ -1,4 +1,5 @@
-﻿using MMMSpriteMaker.Properties;
+﻿using MMMSpriteMaker.ViewModel;
+using ruche.mmm.tools.spriteMaker;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,10 +16,27 @@ namespace MMMSpriteMaker.View
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public ConfigWindow()
+        /// <param name="viewModel">ビューモデル。</param>
+        public ConfigWindow(ConfigViewModel viewModel)
         {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException("viewModel");
+            }
+
             InitializeComponent();
+
+            // ビューモデル設定
+            DataContext = viewModel;
+
+            // エフェクトファイル設定を保持しておく
+            EffectFileConfig = viewModel.Config;
         }
+
+        /// <summary>
+        /// エフェクトファイル設定を取得または設定する。
+        /// </summary>
+        private EffectFileConfig EffectFileConfig { get; set; }
 
         /// <summary>
         /// Close コマンドの Executed イベント発生時に呼び出される。
@@ -62,7 +80,7 @@ namespace MMMSpriteMaker.View
                     // ファイルを処理
                     var makerWindow =
                         new View.MakerWindow(
-                            new ViewModel.MakerViewModel(Settings.Default, files));
+                            new ViewModel.MakerViewModel(EffectFileConfig, files));
                     makerWindow.Show();
 
                     e.Handled = true;

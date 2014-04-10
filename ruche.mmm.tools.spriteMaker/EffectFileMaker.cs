@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Prop = MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker.resources;
 
-namespace MMMSpriteMaker.IO
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// エフェクトファイルを作成するクラス。
@@ -12,41 +12,11 @@ namespace MMMSpriteMaker.IO
     public class EffectFileMaker
     {
         /// <summary>
-        /// ピクセル倍率の最小値。
-        /// </summary>
-        public static readonly float MinPixelRatio = 0.000001f;
-
-        /// <summary>
-        /// ピクセル倍率の最大値。
-        /// </summary>
-        public static readonly float MaxPixelRatio = 100000.0f;
-
-        /// <summary>
-        /// ビューポート幅の最小値。
-        /// </summary>
-        public static readonly float MinSpriteViewportWidth = 0.000001f;
-
-        /// <summary>
-        /// ビューポート幅の最大値。
-        /// </summary>
-        public static readonly float MaxSpriteViewportWidth = 100000.0f;
-
-        /// <summary>
-        /// Zオーダー範囲の最小値。
-        /// </summary>
-        public static readonly float MinSpriteZRange = 0.000001f;
-
-        /// <summary>
-        /// Zオーダー範囲の最大値。
-        /// </summary>
-        public static readonly float MaxSpriteZRange = 100000.0f;
-
-        /// <summary>
         /// コンストラクタ。
         /// </summary>
         public EffectFileMaker()
         {
-            Config = Prop.Settings.Default;
+            Config = new EffectFileConfig();
         }
 
         /// <summary>
@@ -57,18 +27,7 @@ namespace MMMSpriteMaker.IO
         /// <summary>
         /// アプリケーション設定を取得または設定する。
         /// </summary>
-        public Prop.Settings Config { get; set; }
-
-        /// <summary>
-        /// 実際に背面を描画するか否かを取得する。
-        /// </summary>
-        /// <returns>背面を描画するならば true 。そうでなければ false 。</returns>
-        public bool IsRenderingBack()
-        {
-            return
-                Config.RenderingBack &&
-                Config.RenderType.HasAnyFlags(ImageRenderTypeFlags.CanRenderBack);
-        }
+        public EffectFileConfig Config { get; set; }
 
         /// <summary>
         /// エフェクトファイルを作成する。
@@ -90,7 +49,7 @@ namespace MMMSpriteMaker.IO
             }
 
             // 雛形文字列取得
-            var code = Prop.Resources.SpriteEffect;
+            var code = Resources.SpriteEffect;
 
             // 置換
             code = TemplateReplaceIdAttribute.Replace(this, code);

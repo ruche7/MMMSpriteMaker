@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Linq;
 
-namespace MMMSpriteMaker.IO
+namespace ruche.mmm.tools.spriteMaker
 {
     partial class TextureAtlas
     {

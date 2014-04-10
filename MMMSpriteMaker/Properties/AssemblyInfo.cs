@@ -6,7 +6,7 @@ using System.Windows;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("MMMSpriteMaker")]
-[assembly: AssemblyDescription("Sprite accessory and effect maker for MikuMikuMoving.")]
+[assembly: AssemblyDescription("The sprite accessory and effect maker for MikuMikuMoving.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ruche-home")]
 [assembly: AssemblyProduct("MMMSpriteMaker")]

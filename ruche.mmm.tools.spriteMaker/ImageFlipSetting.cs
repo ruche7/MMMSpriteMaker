@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Prop = MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker.resources;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// イメージの反転設定を表す列挙。
@@ -13,7 +13,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageFlipSetting_NotFlip",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         NotFlip = 0,
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageFlipSetting_Flip",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         Flip = 1,
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace MMMSpriteMaker
         /// </summary>
         [Display(
             Name = "Enum_ImageFlipSetting_Selectable",
-            ResourceType = typeof(Prop.Resources))]
+            ResourceType = typeof(Resources))]
         Selectable = 2,
     }
 }

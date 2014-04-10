@@ -1,9 +1,8 @@
-﻿using MMMSpriteMaker.IO;
-using MMMSpriteMaker.Properties;
+﻿using ruche.mmm.tools.spriteMaker.resources;
 using System;
 using System.IO;
 
-namespace MMMSpriteMaker
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// スプライトファイル群を作成するクラス。
@@ -13,20 +12,22 @@ namespace MMMSpriteMaker
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        /// <param name="config">アプリケーション設定。</param>
+        /// <param name="effectFileConfig">エフェクトファイル設定。</param>
         /// <param name="textureAtlasFilePath">テクスチャアトラスファイルパス。</param>
-        public SpriteMaker(Settings config, string textureAtlasFilePath)
+        public SpriteMaker(
+            EffectFileConfig effectFileConfig,
+            string textureAtlasFilePath)
         {
-            if (config == null)
+            if (effectFileConfig == null)
             {
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException("effectFileConfig");
             }
             if (textureAtlasFilePath == null)
             {
                 throw new ArgumentNullException("textureAtlasFilePath");
             }
 
-            Config = config;
+            EffectFileConfig = effectFileConfig;
 
             var path = Path.GetFullPath(textureAtlasFilePath);
             BaseDirectoryPath = Path.GetDirectoryName(path);
@@ -36,9 +37,9 @@ namespace MMMSpriteMaker
         }
 
         /// <summary>
-        /// アプリケーション設定を取得する。
+        /// エフェクトファイル設定を取得する。
         /// </summary>
-        public Settings Config { get; private set; }
+        public EffectFileConfig EffectFileConfig { get; private set; }
 
         /// <summary>
         /// ベースディレクトリパスを取得する。
@@ -96,7 +97,7 @@ namespace MMMSpriteMaker
 
             // エフェクトファイル書き出し
             var effectMaker = new EffectFileMaker();
-            effectMaker.Config = Config;
+            effectMaker.Config = EffectFileConfig;
             effectMaker.TextureAtlas = atlas;
             try
             {

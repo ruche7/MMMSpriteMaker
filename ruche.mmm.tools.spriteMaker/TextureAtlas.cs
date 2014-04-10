@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
-namespace MMMSpriteMaker.IO
+namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// テクスチャアトラスを定義するクラス。

@@ -1,9 +1,8 @@
-﻿using MMMSpriteMaker.IO;
+﻿using ruche.mmm.tools.spriteMaker;
 using ruche.wpf.viewModel;
 using System;
 using System.ComponentModel;
 using System.Windows.Input;
-using Prop = MMMSpriteMaker.Properties;
 
 namespace MMMSpriteMaker.ViewModel
 {
@@ -15,33 +14,38 @@ namespace MMMSpriteMaker.ViewModel
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public ConfigViewModel() : this(Prop.Settings.Default)
+        public ConfigViewModel() : this(new EffectFileConfig())
         {
         }
 
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        /// <param name="config">アプリケーション設定。</param>
-        public ConfigViewModel(Prop.Settings config)
+        /// <param name="config">エフェクトファイル設定。</param>
+        public ConfigViewModel(EffectFileConfig config)
         {
             if (config == null)
             {
                 throw new ArgumentNullException("config");
             }
 
-            // アプリケーション設定を設定
+            // エフェクトファイル設定を設定
             Config = config;
 
             // コマンド作成
             ResetCommand = new DelegateCommand(_ => Config.Reset());
 
-            // アプリケーション設定変更時の処理を登録
+            // エフェクトファイル設定変更時の処理を登録
             Config.PropertyChanged += Config_PropertyChanged;
 
             // RenderType 関連プロパティ初期化
             ChangeRenderTypeStatus(Config.RenderType);
         }
+
+        /// <summary>
+        /// エフェクトファイル設定を取得する。
+        /// </summary>
+        public EffectFileConfig Config { get; private set; }
 
         /// <summary>
         /// イメージの描画方法を取得または設定する。
@@ -126,15 +130,7 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public static float MinPixelRatio
         {
-            get { return EffectFileMaker.MinPixelRatio; }
-        }
-
-        /// <summary>
-        /// ピクセル倍率の最大値を取得する。
-        /// </summary>
-        public static float MaxPixelRatio
-        {
-            get { return EffectFileMaker.MaxPixelRatio; }
+            get { return EffectFileConfig.MinPixelRatio; }
         }
 
         /// <summary>
@@ -143,11 +139,7 @@ namespace MMMSpriteMaker.ViewModel
         public float PixelRatio
         {
             get { return Config.PixelRatio; }
-            set
-            {
-                Config.PixelRatio =
-                    Math.Min(Math.Max(MinPixelRatio, value), MaxPixelRatio);
-            }
+            set { Config.PixelRatio = value; }
         }
 
         /// <summary>
@@ -172,15 +164,7 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public static float MinSpriteViewportWidth
         {
-            get { return EffectFileMaker.MinSpriteViewportWidth; }
-        }
-
-        /// <summary>
-        /// ビューポート幅の最大値を取得する。
-        /// </summary>
-        public static float MaxSpriteViewportWidth
-        {
-            get { return EffectFileMaker.MaxSpriteViewportWidth; }
+            get { return EffectFileConfig.MinSpriteViewportWidth; }
         }
 
         /// <summary>
@@ -189,13 +173,7 @@ namespace MMMSpriteMaker.ViewModel
         public float SpriteViewportWidth
         {
             get { return Config.SpriteViewportWidth; }
-            set
-            {
-                Config.SpriteViewportWidth =
-                    Math.Min(
-                        Math.Max(MinSpriteViewportWidth, value),
-                        MaxSpriteViewportWidth);
-            }
+            set { Config.SpriteViewportWidth = value; }
         }
 
         /// <summary>
@@ -220,15 +198,7 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public static float MinSpriteZRange
         {
-            get { return EffectFileMaker.MinSpriteZRange; }
-        }
-
-        /// <summary>
-        /// Zオーダー範囲の最大値を取得する。
-        /// </summary>
-        public static float MaxSpriteZRange
-        {
-            get { return EffectFileMaker.MaxSpriteZRange; }
+            get { return EffectFileConfig.MinSpriteZRange; }
         }
 
         /// <summary>
@@ -237,11 +207,7 @@ namespace MMMSpriteMaker.ViewModel
         public float SpriteZRange
         {
             get { return Config.SpriteZRange; }
-            set
-            {
-                Config.SpriteZRange =
-                    Math.Min(Math.Max(MinSpriteZRange, value), MaxSpriteZRange);
-            }
+            set { Config.SpriteZRange = value; }
         }
 
         /// <summary>
@@ -275,11 +241,6 @@ namespace MMMSpriteMaker.ViewModel
         /// すべての設定を既定値に戻すコマンドを取得する。
         /// </summary>
         public ICommand ResetCommand { get; private set; }
-
-        /// <summary>
-        /// アプリケーション設定を取得する。
-        /// </summary>
-        private Prop.Settings Config { get; set; }
 
         /// <summary>
         /// アプリケーション設定の変更時に呼び出される。

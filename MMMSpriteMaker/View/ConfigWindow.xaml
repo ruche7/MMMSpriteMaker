@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:c="http://ruche-home.net/xaml/wpf/converters"
     xmlns:vm="http://ruche-home.net/xaml/wpf/viewModel"
+    xmlns:sm="http://ruche-home.net/xaml/mmm/tools/spriteMaker"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:app="clr-namespace:MMMSpriteMaker"
     xmlns:appvm="clr-namespace:MMMSpriteMaker.ViewModel"
@@ -14,24 +15,26 @@
     AllowDrop="True"
     PreviewDragOver="Window_PreviewDragOver"
     Drop="Window_Drop">
-    <Window.DataContext>
-        <appvm:ConfigViewModel />
-    </Window.DataContext>
     <Window.Resources>
         <!-- enum values -->
         <ObjectDataProvider x:Key="imageRenderTypes" ObjectType="{x:Type sys:Enum}" MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="app:ImageRenderType" />
+                <x:Type TypeName="sm:ImageRenderType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="imageFlipSettings" ObjectType="{x:Type sys:Enum}" MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="app:ImageFlipSetting" />
+                <x:Type TypeName="sm:ImageFlipSetting" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="lightSettings" ObjectType="{x:Type sys:Enum}" MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="app:LightSetting" />
+                <x:Type TypeName="sm:LightSetting" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="imageBasePoints" ObjectType="{x:Type sys:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="sm:ImageBasePoint" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
@@ -164,7 +167,6 @@
                             <Binding.Converter>
                                 <c:RangedSingleStringConverter
                                     MinValue="{x:Static appvm:ConfigViewModel.MinPixelRatio}"
-                                    MaxValue="{x:Static appvm:ConfigViewModel.MaxPixelRatio}"
                                     MinDecimalPlaces="1" />
                             </Binding.Converter>
                         </Binding>
@@ -182,7 +184,6 @@
                             <Binding.Converter>
                                 <c:RangedSingleStringConverter
                                     MinValue="{x:Static appvm:ConfigViewModel.MinSpriteViewportWidth}"
-                                    MaxValue="{x:Static appvm:ConfigViewModel.MaxSpriteViewportWidth}"
                                     MinDecimalPlaces="1" />
                             </Binding.Converter>
                         </Binding>
@@ -200,7 +201,6 @@
                             <Binding.Converter>
                                 <c:RangedSingleStringConverter
                                     MinValue="{x:Static appvm:ConfigViewModel.MinSpriteZRange}"
-                                    MaxValue="{x:Static appvm:ConfigViewModel.MaxSpriteZRange}"
                                     MinDecimalPlaces="1" />
                             </Binding.Converter>
                         </Binding>
@@ -229,39 +229,39 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_LeftTop}"
+                    Content="{Binding [0], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=LeftTop}"
                     Grid.Row="0" Grid.Column="0" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_MiddleTop}"
+                    Content="{Binding [1], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=MiddleTop}"
                     Grid.Row="0" Grid.Column="1" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_RightTop}"
+                    Content="{Binding [2], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=RightTop}"
                     Grid.Row="0" Grid.Column="2" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_LeftMiddle}"
+                    Content="{Binding [3], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=LeftMiddle}"
                     Grid.Row="1" Grid.Column="0" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_Center}"
+                    Content="{Binding [4], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=Center}"
                     Grid.Row="1" Grid.Column="1" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_RightMiddle}"
+                    Content="{Binding [5], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=RightMiddle}"
                     Grid.Row="1" Grid.Column="2" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_LeftBottom}"
+                    Content="{Binding [6], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=LeftBottom}"
                     Grid.Row="2" Grid.Column="0" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_MiddleBottom}"
+                    Content="{Binding [7], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=MiddleBottom}"
                     Grid.Row="2" Grid.Column="1" />
                 <RadioButton
-                    Content="{x:Static prop:Resources.Enum_ImageBasePoint_RightBottom}"
+                    Content="{Binding [8], Source={StaticResource imageBasePoints}, Converter={StaticResource enumValueDisplayConverter}}"
                     IsChecked="{Binding BasePoint, Converter={StaticResource enumValueEquationConverter}, ConverterParameter=RightBottom}"
                     Grid.Row="2" Grid.Column="2" />
             </Grid>

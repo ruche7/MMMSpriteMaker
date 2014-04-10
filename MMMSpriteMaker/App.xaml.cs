@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using ruche.mmm.tools.spriteMaker;
 using Prop = MMMSpriteMaker.Properties;
 
 namespace MMMSpriteMaker
@@ -41,9 +42,17 @@ namespace MMMSpriteMaker
         /// <summary>
         /// アプリケーション設定を取得する。
         /// </summary>
-        private Prop.Settings Config
+        private Prop.Settings Settings
         {
             get { return Prop.Settings.Default; }
+        }
+
+        /// <summary>
+        /// エフェクトファイル設定を取得する。
+        /// </summary>
+        private EffectFileConfig EffectFileConfig
+        {
+            get { return Settings.EffectFileConfig; }
         }
 
         /// <summary>
@@ -56,14 +65,29 @@ namespace MMMSpriteMaker
                 mutexForSettingFile.WaitOne();
 
                 // 読み込み
-                Config.Reload();
+                Settings.Reload();
+
+                bool needSave = false;
 
                 // 未アップグレードの場合のみアップグレードする
-                if (!Config.IsUpgraded)
+                if (!Settings.IsUpgraded)
                 {
-                    Config.Upgrade();
-                    Config.IsUpgraded = true;
-                    Config.Save();
+                    Settings.Upgrade();
+                    Settings.IsUpgraded = true;
+                    needSave = true;
+                }
+
+                // エフェクトファイル設定が null ならば初期化
+                if (Settings.EffectFileConfig == null)
+                {
+                    Settings.EffectFileConfig = new EffectFileConfig();
+                    needSave = true;
+                }
+
+                // 必要であれば保存
+                if (needSave)
+                {
+                    Settings.Save();
                 }
             }
             finally
@@ -72,7 +96,8 @@ namespace MMMSpriteMaker
             }
 
             // 設定値が変更されたら即保存するようにする
-            Config.PropertyChanged += (sender, e) => SaveSettings();
+            Settings.PropertyChanged += (sender, e) => SaveSettings();
+            Settings.EffectFileConfig.PropertyChanged += (sender, e) => SaveSettings();
         }
 
         /// <summary>
@@ -85,7 +110,7 @@ namespace MMMSpriteMaker
                 mutexForSettingFile.WaitOne();
 
                 // 保存
-                Config.Save();
+                Settings.Save();
             }
             finally
             {
@@ -110,7 +135,8 @@ namespace MMMSpriteMaker
 
             // 作成ウィンドウ起動
             var makerWindow =
-                new View.MakerWindow(new ViewModel.MakerViewModel(Config, files));
+                new View.MakerWindow(
+                    new ViewModel.MakerViewModel(EffectFileConfig, files));
             makerWindow.Show();
         }
 
@@ -119,7 +145,7 @@ namespace MMMSpriteMaker
         /// </summary>
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            // 設定初期化
+            // アプリケーション設定初期化
             InitializeSettings();
 
             // 引数があればそれらを処理して終了
@@ -140,7 +166,9 @@ namespace MMMSpriteMaker
             }
 
             // 設定ウィンドウ起動
-            (new View.ConfigWindow()).Show();
+            var configWindow =
+                new View.ConfigWindow(new ViewModel.ConfigViewModel(EffectFileConfig));
+            configWindow.Show();
         }
 
         /// <summary>
