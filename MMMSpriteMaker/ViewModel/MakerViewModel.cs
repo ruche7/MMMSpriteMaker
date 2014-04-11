@@ -44,7 +44,13 @@ namespace MMMSpriteMaker.ViewModel
                     .Where(p => !string.IsNullOrWhiteSpace(p))
                     .Select(p => Path.GetFullPath(p))
                     .Distinct() // あまりアテにならないが一応重複を弾く
-                    .Select(p => new SpriteMaker(effectFileConfig, p))
+                    .Select(
+                        p =>
+                            new SpriteMaker
+                            {
+                                TextureAtlasFilePath = p,
+                                EffectFileConfig = effectFileConfig,
+                            })
                     .ToList()
                     .AsReadOnly();
             if (Makers.Count <= 0)
@@ -235,6 +241,11 @@ namespace MMMSpriteMaker.ViewModel
         public ICommand CopyLogCommand { get; private set; }
 
         /// <summary>
+        /// 処理終了時に呼び出されるイベント。
+        /// </summary>
+        public event EventHandler RunFinished;
+
+        /// <summary>
         /// UIスレッドでタスク処理を行うためのスケジューラ。
         /// </summary>
         private readonly TaskScheduler uiSyncScheduler =
@@ -287,23 +298,30 @@ namespace MMMSpriteMaker.ViewModel
                 try
                 {
                     // 開始ログ追加
+                    var atlasFilePath = maker.GetTextureAtlasFilePath();
+                    var baseDirPath = Path.GetDirectoryName(atlasFilePath);
+                    var atlasFileName = Path.GetFileName(atlasFilePath);
                     AddLogLines(
                         string.Format(
                             Resources.LogFormat_Begin,
                             PassedCount + 1,
                             Makers.Count,
-                            maker.BaseDirectoryPath,
-                            maker.TextureAtlasFileName));
+                            baseDirPath,
+                            atlasFileName));
 
                     // 作成処理実行
                     maker.Make();
 
                     // 成功ログ追加
+                    var accessoryFileName =
+                        Path.GetFileName(maker.GetOutputAccessoryFilePath());
+                    var effectFileName =
+                        Path.GetFileName(maker.GetOutputEffectFilePath());
                     AddLogLines(
                         string.Format(
                             Resources.LogFormat_Success,
-                            maker.AccessoryFileName,
-                            maker.EffectFileName));
+                            accessoryFileName,
+                            effectFileName));
                     IncrementPassedCount(true);
                 }
                 catch (Exception ex)
@@ -352,6 +370,9 @@ namespace MMMSpriteMaker.ViewModel
 
             Finished = true;
             Running = false;
+
+            // RunFinished イベント呼び出し
+            CallRunFinishedEvent();
         }
 
         /// <summary>
@@ -410,6 +431,21 @@ namespace MMMSpriteMaker.ViewModel
                     else
                     {
                         ++FailedCount;
+                    }
+                });
+        }
+
+        /// <summary>
+        /// UIスレッド上で RunFinished イベントを呼び出す。
+        /// </summary>
+        private void CallRunFinishedEvent()
+        {
+            DoTaskOnUIThread(
+                () =>
+                {
+                    if (RunFinished != null)
+                    {
+                        RunFinished(this, EventArgs.Empty);
                     }
                 });
         }

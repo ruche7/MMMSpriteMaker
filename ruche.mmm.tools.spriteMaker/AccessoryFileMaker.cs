@@ -18,6 +18,9 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// テクスチャファイル名を取得または設定する。
         /// </summary>
+        /// <remarks>
+        /// ここで指定した文字列がそのままアクセサリファイルに書き出される。
+        /// </remarks>
         [TemplateReplaceId]
         public string TextureFileName { get; set; }
 
@@ -25,15 +28,18 @@ namespace ruche.mmm.tools.spriteMaker
         /// アクセサリファイルを作成する。
         /// </summary>
         /// <param name="filePath">ファイルパス。</param>
+        /// <remarks>
+        /// 事前に TextureFileName に有効な文字列を設定しておく必要がある。
+        /// </remarks>
         public void Make(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
+            if (!MakerUtil.IsValidPath(filePath))
             {
                 throw new ArgumentException("Invalid file path.", "filePath");
             }
-            if (string.IsNullOrWhiteSpace(TextureFileName))
+            if (!MakerUtil.IsValidPath(TextureFileName))
             {
-                throw new InvalidOperationException("Invalid texture file name.");
+                throw new InvalidOperationException("TextureFileName is invalid.");
             }
 
             // 雛形文字列取得

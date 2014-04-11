@@ -12,72 +12,123 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        /// <param name="effectFileConfig">エフェクトファイル設定。</param>
-        /// <param name="textureAtlasFilePath">テクスチャアトラスファイルパス。</param>
-        public SpriteMaker(
-            EffectFileConfig effectFileConfig,
-            string textureAtlasFilePath)
+        public SpriteMaker()
         {
-            if (effectFileConfig == null)
-            {
-                throw new ArgumentNullException("effectFileConfig");
-            }
-            if (textureAtlasFilePath == null)
-            {
-                throw new ArgumentNullException("textureAtlasFilePath");
-            }
-
-            EffectFileConfig = effectFileConfig;
-
-            var path = Path.GetFullPath(textureAtlasFilePath);
-            BaseDirectoryPath = Path.GetDirectoryName(path);
-            TextureAtlasFileName = Path.GetFileName(path);
-            AccessoryFileName = Path.ChangeExtension(TextureAtlasFileName, "x");
-            EffectFileName = Path.ChangeExtension(TextureAtlasFileName, "fx");
+            EffectFileConfig = new EffectFileConfig();
         }
 
         /// <summary>
-        /// エフェクトファイル設定を取得する。
+        /// テクスチャアトラスファイルパスを取得または設定する。
         /// </summary>
-        public EffectFileConfig EffectFileConfig { get; private set; }
+        public string TextureAtlasFilePath { get; set; }
 
         /// <summary>
-        /// ベースディレクトリパスを取得する。
+        /// 実際に使われるテクスチャアトラスファイルパスを取得する。
         /// </summary>
-        public string BaseDirectoryPath { get; private set; }
+        /// <returns>
+        /// テクスチャアトラスファイルパス。
+        /// TextureAtlasFilePath に無効な値が入っている場合は null 。
+        /// </returns>
+        public string GetTextureAtlasFilePath()
+        {
+            return
+                MakerUtil.IsValidPath(TextureAtlasFilePath) ?
+                    Path.GetFullPath(TextureAtlasFilePath) : null;
+        }
 
         /// <summary>
-        /// テクスチャアトラスファイル名を取得する。
+        /// エフェクトファイル設定を取得または設定する。
         /// </summary>
-        public string TextureAtlasFileName { get; private set; }
+        public EffectFileConfig EffectFileConfig { get; set; }
 
         /// <summary>
-        /// アクセサリファイル名を取得する。
+        /// アクセサリファイルの出力先パスを取得または設定する。
         /// </summary>
-        public string AccessoryFileName { get; private set; }
+        /// <remarks>
+        /// null ならばテクスチャアトラスファイルパスの拡張子を
+        /// ".x" に書き換えたパスを用いる。
+        /// </remarks>
+        public string OutputAccessoryFilePath { get; set; }
 
         /// <summary>
-        /// エフェクトファイル名を取得する。
+        /// 実際に使われるアクセサリファイルの出力先パスを取得する。
         /// </summary>
-        public string EffectFileName { get; private set; }
+        /// <returns>
+        /// アクセサリファイルの出力先パス。
+        /// OutputAccessoryFilePath に null 以外の無効な値が入っている場合や、
+        /// OutputAccessoryFilePath が null かつ
+        /// TextureAtlasFilePath に無効な値が入っている場合は null 。
+        /// </returns>
+        public string GetOutputAccessoryFilePath()
+        {
+            return MakeOutputFilePath(OutputAccessoryFilePath, ".x");
+        }
+
+        /// <summary>
+        /// エフェクトファイルの出力先パスを取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// null ならばテクスチャアトラスファイルパスの拡張子を
+        /// ".fx" に書き換えたパスを用いる。
+        /// </remarks>
+        public string OutputEffectFilePath { get; set; }
+
+        /// <summary>
+        /// 実際に使われるエフェクトファイルの出力先パスを取得する。
+        /// </summary>
+        /// <returns>
+        /// エフェクトファイルの出力先パス。
+        /// OutputEffectFilePath に null 以外の無効な値が入っている場合や、
+        /// OutputEffectFilePath が null かつ
+        /// TextureAtlasFilePath に無効な値が入っている場合は null 。
+        /// </returns>
+        public string GetOutputEffectFilePath()
+        {
+            return MakeOutputFilePath(OutputEffectFilePath, ".fx");
+        }
 
         /// <summary>
         /// アクセサリファイルとエフェクトファイルを作成する。
         /// </summary>
+        /// <remarks>
+        /// 事前に TextureAtlasFilePath および EffectFileConfig に有効な値を
+        /// 設定しておく必要がある。
+        /// </remarks>
         public void Make()
         {
-            var atlasFilePath = Path.Combine(BaseDirectoryPath, TextureAtlasFileName);
-            var accFilePath = Path.Combine(BaseDirectoryPath, AccessoryFileName);
-            var effectFilePath = Path.Combine(BaseDirectoryPath, EffectFileName);
-
-            // テクスチャアトラス読み込み
-            var atlas = TextureAtlas.FromPlist(atlasFilePath);
-            if (atlas == null)
+            var atlasFilePath = GetTextureAtlasFilePath();
+            if (atlasFilePath == null)
             {
-                throw new InvalidDataException(
+                throw new InvalidOperationException("TextureAtlasFilePath is invalid.");
+            }
+            if (EffectFileConfig == null)
+            {
+                throw new InvalidOperationException("EffectFileConfig is null.");
+            }
+            var accFilePath = GetOutputAccessoryFilePath();
+            if (accFilePath == null)
+            {
+                throw new InvalidOperationException("OutputAccessoryFilePath is invalid.");
+            }
+            var effectFilePath = GetOutputEffectFilePath();
+            if (effectFilePath == null)
+            {
+                throw new InvalidOperationException("OutputEffectFilePath is invalid.");
+            }
+
+            // テクスチャアトラスファイル読み込み
+            TextureAtlas atlas = null;
+            try
+            {
+                atlas = TextureAtlas.Load(atlasFilePath);
+            }
+            catch (Exception ex)
+            {
+                throw new FileFormatException(
                     string.Format(
                         Resources.SpriteMakerFormat_BadAtlasFile,
-                        TextureAtlasFileName));
+                        Path.GetFileName(atlasFilePath)),
+                    ex);
             }
 
             // アクセサリファイル書き出し
@@ -87,12 +138,13 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 accMaker.Make(accFilePath);
             }
-            catch
+            catch (Exception ex)
             {
                 throw new Exception(
                     string.Format(
                         Resources.SpriteMakerFormat_AccessoryFileFail,
-                        AccessoryFileName));
+                        Path.GetFileName(accFilePath)),
+                    ex);
             }
 
             // エフェクトファイル書き出し
@@ -103,13 +155,41 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 effectMaker.Make(effectFilePath);
             }
-            catch
+            catch (Exception ex)
             {
                 throw new Exception(
                     string.Format(
                         Resources.SpriteMakerFormat_EffectFileFail,
-                        EffectFileName));
+                        Path.GetFileName(effectFilePath)),
+                    ex);
             }
+        }
+
+        /// <summary>
+        /// 出力ファイルパスを作成する。
+        /// </summary>
+        /// <param name="filePath">
+        /// 出力ファイルパス指定値。
+        /// null ならばテクスチャアトラスファイルパスを基にする。
+        /// </param>
+        /// <param name="extension">拡張子。</param>
+        /// <returns>出力ファイルパス。作成できなかった場合は null 。</returns>
+        private string MakeOutputFilePath(string filePath, string extension)
+        {
+            if (filePath == null)
+            {
+                var atlasFilePath = GetTextureAtlasFilePath();
+                if (atlasFilePath != null)
+                {
+                    return Path.ChangeExtension(atlasFilePath, extension);
+                }
+            }
+            else if (MakerUtil.IsValidPath(filePath))
+            {
+                return Path.GetFullPath(filePath);
+            }
+
+            return null;
         }
     }
 }

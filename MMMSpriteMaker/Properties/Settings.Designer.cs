@@ -45,5 +45,17 @@ namespace MMMSpriteMaker.Properties {
                 this["EffectFileConfig"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoCloseAtSucceeded {
+            get {
+                return ((bool)(this["AutoCloseAtSucceeded"]));
+            }
+            set {
+                this["AutoCloseAtSucceeded"] = value;
+            }
+        }
     }
 }

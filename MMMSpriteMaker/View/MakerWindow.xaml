@@ -15,6 +15,9 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding RunCommand}" />
         </i:EventTrigger>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CancelCommand}" />
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <!-- window body -->
@@ -46,6 +49,7 @@
             </StackPanel>
             <CheckBox
                 Content="{x:Static prop:Resources.MakerWindow_AutoClose}"
+                IsChecked="{Binding AutoCloseAtSucceeded, Source={x:Static prop:Settings.Default}}"
                 VerticalAlignment="Center"
                 Margin="4,4,8,4"
                 TabIndex="2"

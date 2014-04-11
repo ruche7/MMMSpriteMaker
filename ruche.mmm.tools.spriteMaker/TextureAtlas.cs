@@ -1,16 +1,47 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using ruche.mmm.tools.spriteMaker.textureAtlasFactories;
 
 namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
     /// テクスチャアトラスを定義するクラス。
     /// </summary>
-    public partial class TextureAtlas
+    public class TextureAtlas
     {
+        /// <summary>
+        /// テクスチャアトラスをファイルから作成する。
+        /// </summary>
+        /// <param name="filePath">ファイルパス。</param>
+        /// <returns>テクスチャアトラス。</returns>
+        /// <exception cref="FileFormatException">
+        /// テクスチャアトラスを作成できなかった場合。
+        /// </exception>
+        public static TextureAtlas Load(string filePath)
+        {
+            // 引数チェック
+            if (string.IsNullOrWhiteSpace(filePath) || !MakerUtil.IsValidPath(filePath))
+            {
+                throw new ArgumentException("Invalid file path.", "filePath");
+            }
+            if (!File.Exists(filePath))
+            {
+                throw new ArgumentException(
+                    "'" + filePath + "' is not found.",
+                    "filePath");
+            }
+
+            // 作成試行
+            try { return new Cocos2dFactory().Load(filePath); } catch { }
+
+            // 作成できなければ例外送出
+            throw new FileFormatException("Invalid file format.");
+        }
+
         /// <summary>
         /// テクスチャアトラスのフレームを定義するクラス。
         /// </summary>
@@ -96,7 +127,7 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        protected TextureAtlas(
+        public TextureAtlas(
             string imageFileName,
             Size imageSize,
             IEnumerable<Frame> frames)

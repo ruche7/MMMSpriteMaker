@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using Prop = MMMSpriteMaker.Properties;
 
 namespace MMMSpriteMaker.View
 {
@@ -25,6 +26,31 @@ namespace MMMSpriteMaker.View
 
             // ビューモデル設定
             DataContext = viewModel;
+
+            // 処理終了時に呼び出されるイベントを設定
+            viewModel.RunFinished += OnRunFinished;
+        }
+
+        /// <summary>
+        /// 処理終了時に呼び出される。
+        /// </summary>
+        private void OnRunFinished(object sender, EventArgs e)
+        {
+            var viewModel = DataContext as MakerViewModel;
+            if (viewModel != null)
+            {
+                // イベント削除
+                viewModel.RunFinished -= OnRunFinished;
+
+                // 成功時に自動で閉じる かつ すべて成功
+                if (
+                    Prop.Settings.Default.AutoCloseAtSucceeded &&
+                    viewModel.SucceededCount >= viewModel.Makers.Count)
+                {
+                    // 閉じる
+                    Close();
+                }
+            }
         }
 
         /// <summary>

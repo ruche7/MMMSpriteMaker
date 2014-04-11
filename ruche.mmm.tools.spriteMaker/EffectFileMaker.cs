@@ -25,7 +25,7 @@ namespace ruche.mmm.tools.spriteMaker
         public TextureAtlas TextureAtlas { get; set; }
 
         /// <summary>
-        /// アプリケーション設定を取得または設定する。
+        /// エフェクトファイル設定を取得または設定する。
         /// </summary>
         public EffectFileConfig Config { get; set; }
 
@@ -33,9 +33,12 @@ namespace ruche.mmm.tools.spriteMaker
         /// エフェクトファイルを作成する。
         /// </summary>
         /// <param name="filePath">ファイルパス。</param>
+        /// <remarks>
+        /// 事前に TextureAtlas および Config に有効な値を設定しておく必要がある。
+        /// </remarks>
         public void Make(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
+            if (!MakerUtil.IsValidPath(filePath))
             {
                 throw new ArgumentException("Invalid file path.", "filePath");
             }
@@ -81,7 +84,7 @@ namespace ruche.mmm.tools.spriteMaker
         [TemplateReplaceId]
         private string ConfigPixelRatio
         {
-            get { return string.Format("{0:0.#########}f", Config.GetPixelRatio()); }
+            get { return string.Format("{0:0.0########}f", Config.GetPixelRatio()); }
         }
 
         [TemplateReplaceId]
@@ -89,14 +92,14 @@ namespace ruche.mmm.tools.spriteMaker
         {
             get
             {
-                return string.Format("{0:0.#########}f", Config.GetSpriteViewportWidth());
+                return string.Format("{0:0.0########}f", Config.GetSpriteViewportWidth());
             }
         }
 
         [TemplateReplaceId]
         private string ConfigSpriteZRange
         {
-            get { return string.Format("{0:0.#########}f", Config.GetSpriteZRange()); }
+            get { return string.Format("{0:0.0########}f", Config.GetSpriteZRange()); }
         }
 
         [TemplateReplaceId]
@@ -142,7 +145,7 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 return
                     string.Join(
-                        "\n",
+                        Environment.NewLine,
                         from f in TextureAtlas.Frames
                         select
                             "        float2(" +
@@ -158,7 +161,7 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 return
                     string.Join(
-                        "\n",
+                        Environment.NewLine,
                         from f in TextureAtlas.Frames
                         let x = f.Rotated ? (f.LeftTop.X + f.Size.Height) : f.LeftTop.X
                         select
@@ -174,7 +177,7 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 return
                     string.Join(
-                        "\n",
+                        Environment.NewLine,
                         from f in TextureAtlas.Frames
                         let w = f.Rotated ? -f.Size.Height : f.Size.Width
                         let h = f.Rotated ? f.Size.Width : f.Size.Height
@@ -191,18 +194,20 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 return
                     string.Join(
-                        "\n",
+                        Environment.NewLine,
                         from i in Enumerable.Range(0, TextureAtlas.Frames.Count)
                         let ri = TextureAtlas.Frames.Count - i - 1
                         let else_ = (i > 0) ? "else " : ""
                         let if_ = (ri > 0) ? ("if (SprMake_AtlasIndex >= " + ri + ")") : ""
                         select
-                            "    " + else_ + if_ + "\n" +
-                            "    {\n" +
-                            "        Out.Size = SprMake_AtlasSizes[" + ri + "];\n" +
-                            "        Out.LeftTopUV = SprMake_AtlasUVLeftTops[" + ri + "];\n" +
-                            "        Out.UVSize = SprMake_AtlasUVSizes[" + ri + "];\n" +
-                            "    }");
+                            string.Join(
+                                Environment.NewLine + "    ",
+                                "    " + else_ + if_,
+                                "{",
+                                "    Out.Size = SprMake_AtlasSizes[" + ri + "];",
+                                "    Out.LeftTopUV = SprMake_AtlasUVLeftTops[" + ri + "];",
+                                "    Out.UVSize = SprMake_AtlasUVSizes[" + ri + "];",
+                                "}"));
             }
         }
 

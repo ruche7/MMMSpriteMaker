@@ -288,6 +288,7 @@ struct SPRMAKE_ATLAS_INFO
     float2 Size;
     float2 LeftTopUV;
     float2 UVSize;
+    bool Rotated;
 };
 
 // Vertex shader output
@@ -324,10 +325,7 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 [[SelectAtlasCode]]
 
     Out.LeftBottomPos = Out.Size * SprMake_AtlasLeftBottomPosMul;
-
-#if SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
-    bool rotated = (Out.UVSize.x < 0);
-#endif // SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
+    Out.Rotated = (Out.UVSize.x < 0);
 
     // flip horizontal
 #if SPRMAKE_CONFIG_FLIP_H != 0
@@ -335,7 +333,7 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
     if (SprMake_FlipHorz)
     {
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_H > 1
-        if (rotated)
+        if (Out.Rotated)
         {
             Out.LeftTopUV.y += Out.UVSize.y;
             Out.UVSize.y = -Out.UVSize.y;
@@ -356,7 +354,7 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
     if (SprMake_FlipVert)
     {
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_V > 1
-        if (rotated)
+        if (Out.Rotated)
         {
             Out.LeftTopUV.x += Out.UVSize.x;
             Out.UVSize.x = -Out.UVSize.x;
@@ -415,6 +413,10 @@ VS_OUTPUT SprMake_VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 Tex :
 
     static SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
     Pos.xy = atlasInfo.LeftBottomPos + (Pos.xy * atlasInfo.Size);
+    if (atlasInfo.Rotated)
+    {
+        Tex = float2(Tex.y, Tex.x);
+    }
     Tex = atlasInfo.LeftTopUV + (Tex * atlasInfo.UVSize);
 
 #ifdef SPRMAKE_RENDER_BILLBOARD
@@ -541,9 +543,6 @@ technique MainTec < string MMDPass = "object"; bool UseTexture = true; bool UseT
 {
     pass DrawObject
     {
-#ifdef SPRMAKE_RENDER_SPRITE
-        ZEnable = FALSE;
-#endif // SPRMAKE_RENDER_SPRITE
 #if SPRMAKE_CONFIG_RENDERBACK > 0
         CullMode = NONE;
 #endif // SPRMAKE_CONFIG_RENDERBACK > 0
@@ -561,9 +560,6 @@ technique MainTecSS < string MMDPass = "object_ss"; bool UseTexture = true; bool
 {
     pass DrawObject
     {
-#ifdef SPRMAKE_RENDER_SPRITE
-        ZEnable = FALSE;
-#endif // SPRMAKE_RENDER_SPRITE
 #if SPRMAKE_CONFIG_RENDERBACK > 0
         CullMode = NONE;
 #endif // SPRMAKE_CONFIG_RENDERBACK > 0
