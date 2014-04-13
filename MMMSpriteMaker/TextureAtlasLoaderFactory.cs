@@ -1,9 +1,9 @@
-﻿using ruche.datas.textureAtlas;
+﻿using MMMSpriteMaker.resources;
+using ruche.datas.textureAtlas;
 using ruche.mmm.tools.spriteMaker;
 using System;
 using System.IO;
 using System.Reflection;
-using Prop = MMMSpriteMaker.Properties;
 
 namespace MMMSpriteMaker
 {
@@ -32,7 +32,7 @@ namespace MMMSpriteMaker
                 if (InnerLoader == null)
                 {
                     throw new Exception(
-                        Prop.Resources.TextureAtlasLoaderFactory_PluginNotFound);
+                        Resources.TextureAtlasLoaderFactory_PluginNotFound);
                 }
             }
 

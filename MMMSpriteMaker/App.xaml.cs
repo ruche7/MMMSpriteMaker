@@ -1,12 +1,12 @@
-﻿using ruche.mmm.tools.spriteMaker;
+﻿using MMMSpriteMaker.Properties;
+using ruche.mmm.tools.spriteMaker;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows;
-using Prop = MMMSpriteMaker.Properties;
+using res = MMMSpriteMaker.resources;
 
 namespace MMMSpriteMaker
 {
@@ -27,7 +27,7 @@ namespace MMMSpriteMaker
         /// <summary>
         /// アプリケーション設定を取得または設定する。
         /// </summary>
-        public static Prop.Settings Settings { get; set; }
+        public static Settings Settings { get; set; }
 
         /// <summary>
         /// エフェクトファイル設定を取得または設定する。
@@ -45,9 +45,9 @@ namespace MMMSpriteMaker
         {
             var settings =
                 SettingsUtil.LoadFromXaml(SettingsXamlFilePath) ??
-                new Prop.Settings();
+                new Settings();
 
-            Settings = Prop.Settings.Synchronized(settings) as Prop.Settings;
+            Settings = Settings.Synchronized(settings) as Settings;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MMMSpriteMaker
         {
             MessageBox.Show(
                 message,
-                Prop.Resources.Dialog_Caption,
+                res.Resources.Dialog_Caption,
                 MessageBoxButton.OK,
                 image);
         }
@@ -154,7 +154,7 @@ namespace MMMSpriteMaker
             // 引数チェック
             if (args == null || args.Length <= 0)
             {
-                ShowAlert(Prop.Resources.Dialog_ArgsFail, MessageBoxImage.Error);
+                ShowAlert(res.Resources.Dialog_ArgsFail, MessageBoxImage.Error);
                 Shutdown(1);
                 return;
             }
@@ -197,7 +197,7 @@ namespace MMMSpriteMaker
             if (!mutexForWindow.WaitOne(0, false))
             {
                 ShowAlert(
-                    Prop.Resources.Dialog_ConfigWindowMultiBootFail,
+                    res.Resources.Dialog_ConfigWindowMultiBootFail,
                     MessageBoxImage.Warning);
                 Shutdown(1);
                 return;

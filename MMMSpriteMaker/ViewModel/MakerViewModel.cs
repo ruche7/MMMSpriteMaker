@@ -1,4 +1,4 @@
-﻿using MMMSpriteMaker.Properties;
+﻿using MMMSpriteMaker.resources;
 using ruche.datas.textureAtlas;
 using ruche.mmm.tools.spriteMaker;
 using ruche.wpf.viewModel;

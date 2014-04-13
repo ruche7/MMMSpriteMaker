@@ -6,10 +6,10 @@
     xmlns:vm="http://ruche-home.net/xaml/wpf/viewModel"
     xmlns:sm="http://ruche-home.net/xaml/mmm/tools/spriteMaker"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:app="clr-namespace:MMMSpriteMaker"
     xmlns:appvm="clr-namespace:MMMSpriteMaker.ViewModel"
-    xmlns:prop="clr-namespace:MMMSpriteMaker.Properties"
-    Title="{x:Static prop:Resources.ConfigWindow_Caption}"
+    xmlns:res="clr-namespace:MMMSpriteMaker.resources"
+    Title="{x:Static res:Resources.ConfigWindow_Caption}"
+    Icon="/MMMSpriteMaker;component/resources/AppIcon.ico"
     SizeToContent="WidthAndHeight"
     ResizeMode="CanMinimize"
     AllowDrop="True"
@@ -121,7 +121,7 @@
 
         <!-- row 0 -->
         <TextBlock
-            Text="{x:Static prop:Resources.ConfigWindow_RenderType}"
+            Text="{x:Static res:Resources.ConfigWindow_RenderType}"
             Grid.Row="0" Grid.Column="0" />
         <Border Grid.Row="0" Grid.Column="1">
             <StackPanel>
@@ -129,7 +129,7 @@
                     ItemsSource="{Binding Source={StaticResource imageRenderTypes}}"
                     SelectedValue="{Binding RenderType}" />
                 <CheckBox
-                    Content="{x:Static prop:Resources.ConfigWindow_RenderingBack}"
+                    Content="{x:Static res:Resources.ConfigWindow_RenderingBack}"
                     IsChecked="{Binding RenderingBack}"
                     Visibility="{Binding CanRenderBack, Converter={StaticResource booleanVisibilityConverter}}" />
                 <Grid>
@@ -146,7 +146,7 @@
 
                     <!-- row 0 -->
                     <TextBlock
-                        Text="{x:Static prop:Resources.ConfigWindow_LightSetting}"
+                        Text="{x:Static res:Resources.ConfigWindow_LightSetting}"
                         Visibility="{Binding CanUseLight, Converter={StaticResource booleanVisibilityConverter}}"
                         Grid.Row="0" Grid.Column="0" />
                     <ComboBox
@@ -157,7 +157,7 @@
 
                     <!-- row 1 -->
                     <TextBlock
-                        Text="{x:Static prop:Resources.ConfigWindow_PixelRatio}"
+                        Text="{x:Static res:Resources.ConfigWindow_PixelRatio}"
                         Visibility="{Binding UsePixelRatio, Converter={StaticResource booleanVisibilityConverter}}"
                         Grid.Row="1" Grid.Column="0" />
                     <TextBox
@@ -174,7 +174,7 @@
 
                     <!-- row 2 -->
                     <TextBlock
-                        Text="{x:Static prop:Resources.ConfigWindow_ViewportWidth}"
+                        Text="{x:Static res:Resources.ConfigWindow_ViewportWidth}"
                         Visibility="{Binding UseSpriteViewportWidth, Converter={StaticResource booleanVisibilityConverter}}"
                         Grid.Row="2" Grid.Column="0" />
                     <TextBox
@@ -191,7 +191,7 @@
 
                     <!-- row 3 -->
                     <TextBlock
-                        Text="{x:Static prop:Resources.ConfigWindow_ZRange}"
+                        Text="{x:Static res:Resources.ConfigWindow_ZRange}"
                         Visibility="{Binding UseSpriteZRange, Converter={StaticResource booleanVisibilityConverter}}"
                         Grid.Row="3" Grid.Column="0" />
                     <TextBox
@@ -211,7 +211,7 @@
 
         <!-- row 1 -->
         <TextBlock
-            Text="{x:Static prop:Resources.ConfigWindow_BasePoint}"
+            Text="{x:Static res:Resources.ConfigWindow_BasePoint}"
             Grid.Row="1" Grid.Column="0" />
         <Border Grid.Row="1" Grid.Column="1">
             <Border.BorderBrush>
@@ -269,7 +269,7 @@
 
         <!-- row 2 -->
         <TextBlock
-            Text="{x:Static prop:Resources.ConfigWindow_FlipSetting}"
+            Text="{x:Static res:Resources.ConfigWindow_FlipSetting}"
             Grid.Row="2" Grid.Column="0" />
         <Border Grid.Row="2" Grid.Column="1">
             <Grid>
@@ -284,7 +284,7 @@
 
                 <!-- row 0 -->
                 <TextBlock
-                    Text="{x:Static prop:Resources.ConfigWindow_FlipHorizontal}"
+                    Text="{x:Static res:Resources.ConfigWindow_FlipHorizontal}"
                     Grid.Row="0" Grid.Column="0" />
                 <ComboBox
                     ItemsSource="{Binding Source={StaticResource imageFlipSettings}}"
@@ -293,7 +293,7 @@
 
                 <!-- row 1 -->
                 <TextBlock
-                    Text="{x:Static prop:Resources.ConfigWindow_FlipVertical}"
+                    Text="{x:Static res:Resources.ConfigWindow_FlipVertical}"
                     Grid.Row="1" Grid.Column="0" />
                 <ComboBox
                     ItemsSource="{Binding Source={StaticResource imageFlipSettings}}"
@@ -309,10 +309,10 @@
             Margin="0,4,0,0"
             Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
             <Button
-                Content="{x:Static prop:Resources.ConfigWindow_Reset}"
+                Content="{x:Static res:Resources.ConfigWindow_Reset}"
                 Command="{Binding ResetCommand}" />
             <Button
-                Content="{x:Static prop:Resources.ConfigWindow_Close}"
+                Content="{x:Static res:Resources.ConfigWindow_Close}"
                 Command="Close" />
         </StackPanel>
     </Grid>

@@ -4,9 +4,10 @@
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:v="http://ruche-home.net/xaml/wpf/view"
     xmlns:app="clr-namespace:MMMSpriteMaker"
-    xmlns:prop="clr-namespace:MMMSpriteMaker.Properties"
+    xmlns:res="clr-namespace:MMMSpriteMaker.resources"
     x:Class="MMMSpriteMaker.View.MakerWindow"
     Title="{Binding ViewCaption}"
+    Icon="/MMMSpriteMaker;component/resources/AppIcon.ico"
     Width="480" Height="320"
     MinWidth="280" MinHeight="200">
     <Window.CommandBindings>
@@ -40,16 +41,16 @@
         <DockPanel DockPanel.Dock="Bottom">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                 <Button
-			        Content="{x:Static prop:Resources.MakerWindow_Copy}"
+			        Content="{x:Static res:Resources.MakerWindow_Copy}"
                     Command="{Binding CopyLogCommand}"
                     TabIndex="3" />
                 <Button
-			        Content="{x:Static prop:Resources.MakerWindow_Close}"
+			        Content="{x:Static res:Resources.MakerWindow_Close}"
                     Command="Close"
                     TabIndex="4" />
             </StackPanel>
             <CheckBox
-                Content="{x:Static prop:Resources.MakerWindow_AutoClose}"
+                Content="{x:Static res:Resources.MakerWindow_AutoClose}"
                 IsChecked="{Binding AutoCloseAtSucceeded, Source={x:Static app:App.Settings}}"
                 VerticalAlignment="Center"
                 Margin="4,4,8,4"
