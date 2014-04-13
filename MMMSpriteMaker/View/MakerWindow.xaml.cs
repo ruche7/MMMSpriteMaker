@@ -2,7 +2,6 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-using Prop = MMMSpriteMaker.Properties;
 
 namespace MMMSpriteMaker.View
 {
@@ -44,7 +43,7 @@ namespace MMMSpriteMaker.View
 
                 // 成功時に自動で閉じる かつ すべて成功
                 if (
-                    Prop.Settings.Default.AutoCloseAtSucceeded &&
+                    App.Settings.AutoCloseAtSucceeded &&
                     viewModel.SucceededCount >= viewModel.Makers.Count)
                 {
                     // 閉じる

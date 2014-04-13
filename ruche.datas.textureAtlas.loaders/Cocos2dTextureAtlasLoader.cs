@@ -6,53 +6,17 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Linq;
 
-namespace ruche.mmm.tools.spriteMaker.textureAtlasFactories
+namespace ruche.datas.textureAtlas.loaders
 {
     /// <summary>
-    /// Cocos2d形式ファイル(*.plist)からテクスチャアトラスを作成するクラス。
+    /// Cocos2d形式ファイルからテクスチャアトラスを作成するクラス。
     /// </summary>
-    public sealed class Cocos2dFactory : FactoryBase
+    public sealed class Cocos2dTextureAtlasLoader : ITextureAtlasLoader
     {
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public Cocos2dFactory() { }
-
-        /// <summary>
-        /// ストリームからテクスチャアトラスを作成する。
-        /// </summary>
-        /// <param name="stream">ストリーム。</param>
-        /// <returns>テクスチャアトラス。</returns>
-        public override TextureAtlas Load(Stream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
-
-            try
-            {
-                var doc = XDocument.Load(stream);
-                var root = Get(Get(doc, "plist"), "dict");
-                var dict = ParseElements(root.Elements());
-
-                Dictionary<string, dynamic> meta = dict["metadata"];
-                string imgFileName =
-                    meta["textureFileName"] ?? meta["realTextureFileName"];
-                Size imgSize = ParseSizeString(meta["size"]);
-
-                var frames =
-                    from kv in (dict["frames"] as Dictionary<string, dynamic>)
-                    let r = ParseRectString(kv.Value["frame"])
-                    select new TextureAtlas.Frame(r.Location, r.Size, kv.Value["rotated"]);
-
-                return new TextureAtlas(imgFileName, imgSize, frames);
-            }
-            catch (Exception ex)
-            {
-                throw new FileFormatException("Invalid file format.", ex);
-            }
-        }
+        public Cocos2dTextureAtlasLoader() { }
 
         /// <summary>
         /// サイズを表す plist 要素文字列値にマッチする正規表現。
@@ -181,5 +145,73 @@ namespace ruche.mmm.tools.spriteMaker.textureAtlasFactories
                     int.Parse(m.Groups[3].Value),
                     int.Parse(m.Groups[4].Value));
         }
+
+        #region ITextureAtlasLoader 実装
+
+        /// <summary>
+        /// ファイルからのテクスチャアトラス作成をサポートするか否かを取得する。
+        /// </summary>
+        /// <remarks>常に true を返す。</remarks>
+        public bool CanLoadFile
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// ディレクトリからのテクスチャアトラス作成をサポートするか否かを取得する。
+        /// </summary>
+        /// <remarks>常に false を返す。</remarks>
+        public bool CanLoadDirectory
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// ソースとして一般的なパスであるか否かを取得する。
+        /// </summary>
+        /// <param name="path">ファイルまたはディレクトリのパス。</param>
+        /// <returns>
+        /// 拡張子が ".plist" であるならば true 。そうでなければ false 。
+        /// </returns>
+        public bool IsTypicalSourcePath(string path)
+        {
+            return (path != null && Path.GetExtension(path).ToLower() == ".plist");
+        }
+
+        /// <summary>
+        /// Cocos2d形式ファイルからテクスチャアトラスを作成する。
+        /// </summary>
+        /// <param name="path">ファイルパス。</param>
+        /// <returns>テクスチャアトラス。作成できない場合は null 。</returns>
+        public TextureAtlas Load(string path)
+        {
+            try
+            {
+                var doc = XDocument.Load(path);
+                var root = Get(Get(doc, "plist"), "dict");
+                var dict = ParseElements(root.Elements());
+
+                Dictionary<string, dynamic> meta = dict["metadata"];
+                string imgFileName =
+                    meta["textureFileName"] ?? meta["realTextureFileName"];
+                Size imgSize = ParseSizeString(meta["size"]);
+
+                var frames =
+                    from kv in (dict["frames"] as Dictionary<string, dynamic>)
+                    let r = ParseRectString(kv.Value["frame"] as string)
+                    select
+                        TextureAtlasFrame.Create(
+                            r.Size,
+                            r.Location,
+                            (bool)kv.Value["rotated"]);
+
+                return new TextureAtlas(imgFileName, imgSize, frames);
+            }
+            catch { }
+
+            return null;
+        }
+
+        #endregion
     }
 }

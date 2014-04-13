@@ -290,5 +290,15 @@ namespace MMMSpriteMaker.Properties {
                 return ResourceManager.GetString("MakerWindow_Copy", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Texture atlas loader plugins are not found.
+        ///Please re-get this tool from an official web site etc. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string TextureAtlasLoaderFactory_PluginNotFound {
+            get {
+                return ResourceManager.GetString("TextureAtlasLoaderFactory_PluginNotFound", resourceCulture);
+            }
+        }
     }
 }

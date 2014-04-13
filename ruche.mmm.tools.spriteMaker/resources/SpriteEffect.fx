@@ -108,9 +108,19 @@ static float2 SprMake_AtlasUVLeftTops[SPRMAKE_ATLAS_COUNT] =
 [[AtlasUVLeftTops]]
     };
 
-static float2 SprMake_AtlasUVSizes[SPRMAKE_ATLAS_COUNT] =
+static float2 SprMake_AtlasUVRightTops[SPRMAKE_ATLAS_COUNT] =
     {
-[[AtlasUVSizes]]
+[[AtlasUVRightTops]]
+    };
+
+static float2 SprMake_AtlasUVRightBottoms[SPRMAKE_ATLAS_COUNT] =
+    {
+[[AtlasUVRightBottoms]]
+    };
+
+static float2 SprMake_AtlasUVLeftBottoms[SPRMAKE_ATLAS_COUNT] =
+    {
+[[AtlasUVLeftBottoms]]
     };
 
 //--------------------------------------
@@ -286,9 +296,10 @@ struct SPRMAKE_ATLAS_INFO
 {
     float2 LeftBottomPos;
     float2 Size;
-    float2 LeftTopUV;
-    float2 UVSize;
-    bool Rotated;
+    float2 UVLeftTop;
+    float2 UVRightTop;
+    float2 UVRightBottom;
+    float2 UVLeftBottom;
 };
 
 // Vertex shader output
@@ -325,7 +336,6 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 [[SelectAtlasCode]]
 
     Out.LeftBottomPos = Out.Size * SprMake_AtlasLeftBottomPosMul;
-    Out.Rotated = (Out.UVSize.x < 0);
 
     // flip horizontal
 #if SPRMAKE_CONFIG_FLIP_H != 0
@@ -333,16 +343,12 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
     if (SprMake_FlipHorz)
     {
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_H > 1
-        if (Out.Rotated)
-        {
-            Out.LeftTopUV.y += Out.UVSize.y;
-            Out.UVSize.y = -Out.UVSize.y;
-        }
-        else
-        {
-            Out.LeftTopUV.x += Out.UVSize.x;
-            Out.UVSize.x = -Out.UVSize.x;
-        }
+        float2 temp = Out.UVLeftTop;
+        Out.UVLeftTop = Out.UVRightTop;
+        Out.UVRightTop = temp;
+        temp = Out.UVLeftBottom;
+        Out.UVLeftBottom = Out.UVRightBottom;
+        Out.UVRightBottom = temp;
 #if defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_H > 1
     }
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_H > 1
@@ -354,16 +360,12 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
     if (SprMake_FlipVert)
     {
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_V > 1
-        if (Out.Rotated)
-        {
-            Out.LeftTopUV.x += Out.UVSize.x;
-            Out.UVSize.x = -Out.UVSize.x;
-        }
-        else
-        {
-            Out.LeftTopUV.y += Out.UVSize.y;
-            Out.UVSize.y = -Out.UVSize.y;
-        }
+        float2 temp = Out.UVLeftTop;
+        Out.UVLeftTop = Out.UVLeftBottom;
+        Out.UVLeftBottom = temp;
+        temp = Out.UVRightTop;
+        Out.UVRightTop = Out.UVRightBottom;
+        Out.UVRightBottom = temp;
 #if defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_V > 1
     }
 #endif // defined(MIKUMIKUMOVING) && SPRMAKE_CONFIG_FLIP_V > 1
@@ -413,11 +415,11 @@ VS_OUTPUT SprMake_VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 Tex :
 
     static SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
     Pos.xy = atlasInfo.LeftBottomPos + (Pos.xy * atlasInfo.Size);
-    if (atlasInfo.Rotated)
-    {
-        Tex = float2(Tex.y, Tex.x);
-    }
-    Tex = atlasInfo.LeftTopUV + (Tex * atlasInfo.UVSize);
+    Tex =
+        lerp(
+            lerp(atlasInfo.UVLeftTop, atlasInfo.UVRightTop, Tex.x),
+            lerp(atlasInfo.UVLeftBottom, atlasInfo.UVRightBottom, Tex.x),
+            Tex.y);
 
 #ifdef SPRMAKE_RENDER_BILLBOARD
     Pos.xyz = mul(Pos.xyz, BillboardMatrix);

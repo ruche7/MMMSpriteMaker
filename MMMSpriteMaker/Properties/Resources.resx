@@ -198,4 +198,8 @@ Succeeded!!</value>
   <data name="MakerWindow_Copy" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
+  <data name="TextureAtlasLoaderFactory_PluginNotFound" xml:space="preserve">
+    <value>Texture atlas loader plugins are not found.
+Please re-get this tool from an official web site etc.</value>
+  </data>
 </root>

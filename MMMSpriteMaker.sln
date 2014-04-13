@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ruche.wpf", "ruche.wpf\ruch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ruche.mmm.tools.spriteMaker", "ruche.mmm.tools.spriteMaker\ruche.mmm.tools.spriteMaker.csproj", "{F2C2A23E-5CA6-47DB-8AE0-84DD36FB28C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ruche.datas.textureAtlas", "ruche.datas.textureAtlas\ruche.datas.textureAtlas.csproj", "{6D882D34-E828-4AA6-8796-C90943F89EC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ruche.datas.textureAtlas.loaders", "ruche.datas.textureAtlas.loaders\ruche.datas.textureAtlas.loaders.csproj", "{4103E339-B2FE-4BFA-9E78-9C322942A7FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{F2C2A23E-5CA6-47DB-8AE0-84DD36FB28C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2C2A23E-5CA6-47DB-8AE0-84DD36FB28C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2C2A23E-5CA6-47DB-8AE0-84DD36FB28C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D882D34-E828-4AA6-8796-C90943F89EC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D882D34-E828-4AA6-8796-C90943F89EC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D882D34-E828-4AA6-8796-C90943F89EC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D882D34-E828-4AA6-8796-C90943F89EC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4103E339-B2FE-4BFA-9E78-9C322942A7FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4103E339-B2FE-4BFA-9E78-9C322942A7FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4103E339-B2FE-4BFA-9E78-9C322942A7FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4103E339-B2FE-4BFA-9E78-9C322942A7FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

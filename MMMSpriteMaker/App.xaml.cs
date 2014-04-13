@@ -1,5 +1,7 @@
 ﻿using ruche.mmm.tools.spriteMaker;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,11 +16,54 @@ namespace MMMSpriteMaker
     public partial class App : Application
     {
         /// <summary>
+        /// アプリケーション設定保存ファイルパス。
+        /// </summary>
+        private static readonly string SettingsXamlFilePath =
+            Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                @"ruche-home\" + typeof(App).Namespace + @"\Settings.xaml");
+
+        /// <summary>
+        /// アプリケーション設定を取得または設定する。
+        /// </summary>
+        public static Prop.Settings Settings { get; set; }
+
+        /// <summary>
+        /// エフェクトファイル設定を取得または設定する。
+        /// </summary>
+        private static EffectFileConfig EffectFileConfig
+        {
+            get { return Settings.EffectFileConfig; }
+            set { Settings.EffectFileConfig = value; }
+        }
+
+        /// <summary>
+        /// アプリケーション設定を読み込む。
+        /// </summary>
+        private static void LoadSettings()
+        {
+            var settings =
+                SettingsUtil.LoadFromXaml(SettingsXamlFilePath) ??
+                new Prop.Settings();
+
+            Settings = Prop.Settings.Synchronized(settings) as Prop.Settings;
+        }
+
+        /// <summary>
+        /// アプリケーション設定を保存する。
+        /// </summary>
+        private static void SaveSettings()
+        {
+            Settings.SaveToXaml(SettingsXamlFilePath);
+        }
+
+        /// <summary>
         /// OKボタン付きのダイアログを表示する。
         /// </summary>
         /// <param name="message">表示メッセージ。</param>
         /// <param name="image">表示アイコン。</param>
-        private static void ShowAlert(string message, MessageBoxImage image)
+        public static void ShowAlert(string message, MessageBoxImage image)
         {
             MessageBox.Show(
                 message,
@@ -40,22 +85,6 @@ namespace MMMSpriteMaker
             new Mutex(false, "{876286C1-80D7-44FB-B3AF-54AE29125810}");
 
         /// <summary>
-        /// アプリケーション設定を取得する。
-        /// </summary>
-        private Prop.Settings Settings
-        {
-            get { return Prop.Settings.Default; }
-        }
-
-        /// <summary>
-        /// エフェクトファイル設定を取得する。
-        /// </summary>
-        private EffectFileConfig EffectFileConfig
-        {
-            get { return Settings.EffectFileConfig; }
-        }
-
-        /// <summary>
         /// アプリケーション設定をプロセス間排他で初期化する。
         /// </summary>
         private void InitializeSettings()
@@ -65,29 +94,21 @@ namespace MMMSpriteMaker
                 mutexForSettingFile.WaitOne();
 
                 // 読み込み
-                Settings.Reload();
+                LoadSettings();
 
                 bool needSave = false;
 
-                // 未アップグレードの場合のみアップグレードする
-                if (!Settings.IsUpgraded)
-                {
-                    Settings.Upgrade();
-                    Settings.IsUpgraded = true;
-                    needSave = true;
-                }
-
                 // エフェクトファイル設定が null ならば初期化
-                if (Settings.EffectFileConfig == null)
+                if (EffectFileConfig == null)
                 {
-                    Settings.EffectFileConfig = new EffectFileConfig();
+                    EffectFileConfig = new EffectFileConfig();
                     needSave = true;
                 }
 
                 // 必要であれば保存
                 if (needSave)
                 {
-                    Settings.Save();
+                    SaveSettings();
                 }
             }
             finally
@@ -96,26 +117,32 @@ namespace MMMSpriteMaker
             }
 
             // 設定値が変更されたら即保存するようにする
-            Settings.PropertyChanged += (sender, e) => SaveSettings();
-            Settings.EffectFileConfig.PropertyChanged += (sender, e) => SaveSettings();
+            Settings.EffectFileConfig.PropertyChanged += OnSettingsPropertyChanged;
+            Settings.PropertyChanged += OnSettingsPropertyChanged;
         }
 
         /// <summary>
-        /// アプリケーション設定をプロセス間排他で保存する。
+        /// Settings および Settings.EffectFileConfig の内容が変更された時に呼び出される。
         /// </summary>
-        private void SaveSettings()
+        private void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            // プロセス間排他で保存
             try
             {
                 mutexForSettingFile.WaitOne();
 
-                // 保存
-                Settings.Save();
+                SaveSettings();
             }
             finally
             {
                 mutexForSettingFile.ReleaseMutex();
             }
+
+            // イベント内容デバッグ表示
+            Debug.WriteLine(
+                "PropertyChanged: {0}.{1}",
+                sender.GetType().Name,
+                e.PropertyName);
         }
 
         /// <summary>
@@ -124,20 +151,31 @@ namespace MMMSpriteMaker
         /// <param name="args"></param>
         private void ProcessArgs(string[] args)
         {
-            // 引数からファイルを抜き出す
-            var files = args.Where(arg => File.Exists(arg)).ToArray();
-            if (files.Length <= 0)
+            // 引数チェック
+            if (args == null || args.Length <= 0)
             {
                 ShowAlert(Prop.Resources.Dialog_ArgsFail, MessageBoxImage.Error);
                 Shutdown(1);
                 return;
             }
 
-            // 作成ウィンドウ起動
-            var makerWindow =
-                new View.MakerWindow(
-                    new ViewModel.MakerViewModel(EffectFileConfig, files));
-            makerWindow.Show();
+            try
+            {
+                // テクスチャアトラスローダ作成
+                var loader = TextureAtlasLoaderFactory.Create();
+
+                // 作成ウィンドウ起動
+                var makerWindow =
+                    new View.MakerWindow(
+                        new ViewModel.MakerViewModel(EffectFileConfig, loader, args));
+                makerWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                ShowAlert(ex.Message, MessageBoxImage.Error);
+                Shutdown(1);
+                return;
+            }
         }
 
         /// <summary>
@@ -176,6 +214,10 @@ namespace MMMSpriteMaker
         /// </summary>
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            // 念のためイベントを破棄
+            Settings.PropertyChanged -= OnSettingsPropertyChanged;
+            Settings.EffectFileConfig.PropertyChanged -= OnSettingsPropertyChanged;
+
             // ミューテクス破棄
             if (mutexForWindow != null)
             {

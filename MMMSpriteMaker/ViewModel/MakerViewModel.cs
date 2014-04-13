@@ -1,4 +1,5 @@
 ﻿using MMMSpriteMaker.Properties;
+using ruche.datas.textureAtlas;
 using ruche.mmm.tools.spriteMaker;
 using ruche.wpf.viewModel;
 using System;
@@ -22,21 +23,30 @@ namespace MMMSpriteMaker.ViewModel
         /// コンストラクタ。
         /// </summary>
         /// <param name="effectFileConfig">エフェクトファイル設定。</param>
+        /// <param name="textureAtlasLoader">テクスチャアトラスローダ。</param>
         /// <param name="textureAtlasFilePathes">
         /// テクスチャアトラスファイルパス列挙。
         /// </param>
         public MakerViewModel(
             EffectFileConfig effectFileConfig,
+            Func<string, TextureAtlas> textureAtlasLoader,
             IEnumerable<string> textureAtlasFilePathes)
         {
             if (effectFileConfig == null)
             {
                 throw new ArgumentNullException("effectFileConfig");
             }
+            if (textureAtlasLoader == null)
+            {
+                throw new ArgumentNullException("textureAtlasLoader");
+            }
             if (textureAtlasFilePathes == null)
             {
                 throw new ArgumentNullException("textureAtlasFilePathes");
             }
+
+            // 処理中に設定値が書き換わらないようにクローンを作成
+            var config = effectFileConfig.Clone();
 
             // SpriteMaker コレクション作成
             Makers =
@@ -48,8 +58,9 @@ namespace MMMSpriteMaker.ViewModel
                         p =>
                             new SpriteMaker
                             {
+                                TextureAtlasLoader = textureAtlasLoader,
                                 TextureAtlasFilePath = p,
-                                EffectFileConfig = effectFileConfig,
+                                EffectFileConfig = config,
                             })
                     .ToList()
                     .AsReadOnly();

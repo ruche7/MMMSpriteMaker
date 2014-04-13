@@ -6,21 +6,24 @@ using System.Reflection;
 
 namespace ruche.mmm.tools.spriteMaker
 {
+    /// <summary>
+    /// エフェクトファイル設定クラス。
+    /// </summary>
     [Serializable]
     public sealed class EffectFileConfig
-        : INotifyPropertyChanged, IEquatable<EffectFileConfig>
+        : INotifyPropertyChanged, IEquatable<EffectFileConfig>, ICloneable
     {
-        public static readonly float MinPixelRatio = 0.000001f;
-
-        public static readonly float MinSpriteViewportWidth = 0.000001f;
-
-        public static readonly float MinSpriteZRange = 0.000001f;
-
+        /// <summary>
+        /// コンストラクタ。
+        /// </summary>
         public EffectFileConfig()
         {
             Reset();
         }
 
+        /// <summary>
+        /// イメージの描画方法を取得または設定する。
+        /// </summary>
         [DefaultValue(typeof(ImageRenderType), "Sprite")]
         public ImageRenderType RenderType
         {
@@ -28,6 +31,12 @@ namespace ruche.mmm.tools.spriteMaker
             set { this["RenderType"] = value; }
         }
 
+        /// <summary>
+        /// 背面を描画するか否かを取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// 実際に背景を描画するか否かは IsRenderingBack メソッドで取得すること。
+        /// </remarks>
         [DefaultValue(false)]
         public bool RenderingBack
         {
@@ -35,6 +44,10 @@ namespace ruche.mmm.tools.spriteMaker
             set { this["RenderingBack"] = value; }
         }
 
+        /// <summary>
+        /// 実際に背面を描画するか否かを取得する。
+        /// </summary>
+        /// <returns>背面を描画するならば true 。そうでなければ false 。</returns>
         public bool IsRenderingBack()
         {
             return
@@ -43,27 +56,12 @@ namespace ruche.mmm.tools.spriteMaker
                     false;
         }
 
-        [DefaultValue(typeof(ImageBasePoint), "Center")]
-        public ImageBasePoint BasePoint
-        {
-            get { return (ImageBasePoint)this["BasePoint"]; }
-            set { this["BasePoint"] = value; }
-        }
-
-        [DefaultValue(typeof(ImageFlipSetting), "NotFlip")]
-        public ImageFlipSetting HorizontalFlipSetting
-        {
-            get { return (ImageFlipSetting)this["HorizontalFlipSetting"]; }
-            set { this["HorizontalFlipSetting"] = value; }
-        }
-
-        [DefaultValue(typeof(ImageFlipSetting), "NotFlip")]
-        public ImageFlipSetting VerticalFlipSetting
-        {
-            get { return (ImageFlipSetting)this["VerticalFlipSetting"]; }
-            set { this["VerticalFlipSetting"] = value; }
-        }
-
+        /// <summary>
+        /// ライトとセルフシャドウの有効設定値を取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// 実際に利用される設定値は GetLightSetting メソッドで取得すること。
+        /// </remarks>
         [DefaultValue(typeof(LightSetting), "Disabled")]
         public LightSetting LightSetting
         {
@@ -71,6 +69,10 @@ namespace ruche.mmm.tools.spriteMaker
             set { this["LightSetting"] = value; }
         }
 
+        /// <summary>
+        /// 実際に利用されるライトとセルフシャドウの有効設定値を取得または設定する。
+        /// </summary>
+        /// <returns>ライトとセルフシャドウの有効設定値。</returns>
         public LightSetting GetLightSetting()
         {
             return
@@ -79,6 +81,17 @@ namespace ruche.mmm.tools.spriteMaker
                     LightSetting.Disabled;
         }
 
+        /// <summary>
+        /// ピクセル倍率の最小値。
+        /// </summary>
+        public static readonly float MinPixelRatio = 0.000001f;
+
+        /// <summary>
+        /// ピクセル倍率値を取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// 実際に利用される値は GetPixelRatio メソッドで取得すること。
+        /// </remarks>
         [DefaultValue(0.1f)]
         public float PixelRatio
         {
@@ -86,6 +99,10 @@ namespace ruche.mmm.tools.spriteMaker
             set { this["PixelRatio"] = Math.Max(value, MinPixelRatio); }
         }
 
+        /// <summary>
+        /// 実際に利用されるピクセル倍率値を取得する。
+        /// </summary>
+        /// <returns>ピクセル倍率値。</returns>
         public float GetPixelRatio()
         {
             return
@@ -94,6 +111,17 @@ namespace ruche.mmm.tools.spriteMaker
                     (float)GetDefaultValue("PixelRatio");
         }
 
+        /// <summary>
+        /// ビューポート幅の最小値。
+        /// </summary>
+        public static readonly float MinSpriteViewportWidth = 0.000001f;
+
+        /// <summary>
+        /// ビューポート幅を取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// 実際に利用される値は GetSpriteViewportWidth メソッドで取得すること。
+        /// </remarks>
         [DefaultValue(45.0f)]
         public float SpriteViewportWidth
         {
@@ -101,6 +129,10 @@ namespace ruche.mmm.tools.spriteMaker
             set { this["SpriteViewportWidth"] = Math.Max(value, MinSpriteViewportWidth); }
         }
 
+        /// <summary>
+        /// 実際に利用されるビューポート幅を取得する。
+        /// </summary>
+        /// <returns>ビューポート幅。</returns>
         public float GetSpriteViewportWidth()
         {
             return
@@ -109,13 +141,28 @@ namespace ruche.mmm.tools.spriteMaker
                     (float)GetDefaultValue("SpriteViewportWidth");
         }
 
-        [DefaultValue(100.0f)]
+        /// <summary>
+        /// Zオーダー範囲の最小値。
+        /// </summary>
+        public static readonly float MinSpriteZRange = 0.000001f;
+
+        /// <summary>
+        /// Zオーダー範囲値を取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// 実際に利用される値は GetSpriteZRange メソッドで取得すること。
+        /// </remarks>
+        [DefaultValue(10.0f)]
         public float SpriteZRange
         {
             get { return (float)this["SpriteZRange"]; }
             set { this["SpriteZRange"] = Math.Max(value, MinSpriteZRange); }
         }
 
+        /// <summary>
+        /// 実際に利用されるZオーダー範囲値を取得する。
+        /// </summary>
+        /// <returns>Zオーダー範囲値。</returns>
         public float GetSpriteZRange()
         {
             return
@@ -124,6 +171,39 @@ namespace ruche.mmm.tools.spriteMaker
                     (float)GetDefaultValue("SpriteZRange");
         }
 
+        /// <summary>
+        /// イメージの基準点位置を取得または設定する。
+        /// </summary>
+        [DefaultValue(typeof(ImageBasePoint), "Center")]
+        public ImageBasePoint BasePoint
+        {
+            get { return (ImageBasePoint)this["BasePoint"]; }
+            set { this["BasePoint"] = value; }
+        }
+
+        /// <summary>
+        /// イメージの左右反転設定値を取得または設定する。
+        /// </summary>
+        [DefaultValue(typeof(ImageFlipSetting), "NotFlip")]
+        public ImageFlipSetting HorizontalFlipSetting
+        {
+            get { return (ImageFlipSetting)this["HorizontalFlipSetting"]; }
+            set { this["HorizontalFlipSetting"] = value; }
+        }
+
+        /// <summary>
+        /// イメージの上下反転設定値を取得または設定する。
+        /// </summary>
+        [DefaultValue(typeof(ImageFlipSetting), "NotFlip")]
+        public ImageFlipSetting VerticalFlipSetting
+        {
+            get { return (ImageFlipSetting)this["VerticalFlipSetting"]; }
+            set { this["VerticalFlipSetting"] = value; }
+        }
+
+        /// <summary>
+        /// すべての設定を既定値に戻す。
+        /// </summary>
         public void Reset()
         {
             foreach (var info in GetConfigPropertyInfos())
@@ -135,11 +215,20 @@ namespace ruche.mmm.tools.spriteMaker
             }
         }
 
+        /// <summary>
+        /// すべての設定名の列挙を取得する。
+        /// </summary>
+        /// <returns>すべての設定名の列挙。</returns>
         public IEnumerable<string> GetConfigNames()
         {
             return GetConfigPropertyInfos().Select(info => info.Name);
         }
 
+        /// <summary>
+        /// 指定した設定の既定値を取得する。
+        /// </summary>
+        /// <param name="name">設定名。</param>
+        /// <returns>既定値。</returns>
         public dynamic GetDefaultValue(string name)
         {
             try
@@ -156,6 +245,35 @@ namespace ruche.mmm.tools.spriteMaker
             }
         }
 
+        /// <summary>
+        /// 自身の設定値で初期化されたクローンを作成する。
+        /// </summary>
+        /// <returns>自身の設定値で初期化されたクローン。</returns>
+        /// <remarks>
+        /// 設定値のみが複製され、イベントは複製されない。
+        /// </remarks>
+        public EffectFileConfig Clone()
+        {
+            return
+                new EffectFileConfig
+                {
+                    Source =
+                        new Dictionary<string, dynamic>(
+                            this.Source,
+                            this.Source.Comparer)
+                };
+        }
+
+        /// <summary>
+        /// 別のエフェクトファイル設定とすべての設定値が等価であるか否かを取得する。
+        /// </summary>
+        /// <param name="other">比較対象。</param>
+        /// <returns>
+        /// すべての設定値が等価であるならば true 。そうでなければ false 。
+        /// </returns>
+        /// <remarks>
+        /// 設定値のみが比較対象であり、イベントやその他のプロパティは比較されない。
+        /// </remarks>
         public bool Equals(EffectFileConfig other)
         {
             if (
@@ -186,24 +304,36 @@ namespace ruche.mmm.tools.spriteMaker
             return
                 (int)RenderType ^
                 (RenderingBack ? -1 : 0) ^
-                ((int)BasePoint * 8) ^
-                ((int)HorizontalFlipSetting * 16) ^
-                ((int)VerticalFlipSetting * 32) ^
-                ((int)LightSetting * 64) ^
+                ((int)LightSetting * 8) ^
                 PixelRatio.GetHashCode() ^
                 SpriteViewportWidth.GetHashCode() ^
-                SpriteZRange.GetHashCode();
+                SpriteZRange.GetHashCode() ^
+                ((int)BasePoint * 16) ^
+                ((int)HorizontalFlipSetting * 32) ^
+                ((int)VerticalFlipSetting * 64);
         }
 
+        /// <summary>
+        /// 設定値が変更された時に呼び出されるイベント。
+        /// </summary>
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// 設定値の保持先となるディクショナリを取得または設定する。
+        /// </summary>
         private Dictionary<string, dynamic> Source
         {
             get { return source; }
+            set { source = value ?? new Dictionary<string, dynamic>(); }
         }
         private Dictionary<string, dynamic> source = new Dictionary<string, dynamic>();
 
+        /// <summary>
+        /// 設定値を取得または設定するインデクサ。
+        /// </summary>
+        /// <param name="name">設定名。</param>
+        /// <returns>設定値。</returns>
         private dynamic this[string name]
         {
             get
@@ -221,6 +351,10 @@ namespace ruche.mmm.tools.spriteMaker
             }
         }
 
+        /// <summary>
+        /// すべての設定のプロパティ情報列挙を取得する。
+        /// </summary>
+        /// <returns>すべての設定のプロパティ情報列挙。</returns>
         private IEnumerable<PropertyInfo> GetConfigPropertyInfos()
         {
             return
@@ -229,6 +363,10 @@ namespace ruche.mmm.tools.spriteMaker
                 select info;
         }
 
+        /// <summary>
+        /// 設定値の変更を通知する。
+        /// </summary>
+        /// <param name="name">設定名。</param>
         private void NotifyPropertyChanged(string name)
         {
             if (PropertyChanged != null)
@@ -236,5 +374,14 @@ namespace ruche.mmm.tools.spriteMaker
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
             }
         }
+
+        #region ICloneable 明示的実装
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        #endregion
     }
 }

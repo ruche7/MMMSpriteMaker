@@ -1,4 +1,5 @@
-﻿using ruche.mmm.tools.spriteMaker.resources;
+﻿using ruche.datas.textureAtlas;
+using ruche.mmm.tools.spriteMaker.resources;
 using System;
 using System.IO;
 
@@ -16,6 +17,11 @@ namespace ruche.mmm.tools.spriteMaker
         {
             EffectFileConfig = new EffectFileConfig();
         }
+
+        /// <summary>
+        /// テクスチャアトラスローダを取得または設定する。
+        /// </summary>
+        public Func<string, TextureAtlas> TextureAtlasLoader { get; set; }
 
         /// <summary>
         /// テクスチャアトラスファイルパスを取得または設定する。
@@ -91,11 +97,15 @@ namespace ruche.mmm.tools.spriteMaker
         /// アクセサリファイルとエフェクトファイルを作成する。
         /// </summary>
         /// <remarks>
-        /// 事前に TextureAtlasFilePath および EffectFileConfig に有効な値を
-        /// 設定しておく必要がある。
+        /// 事前に TextureAtlasLoader 、 TextureAtlasFilePath 、 EffectFileConfig に
+        /// 有効な値を設定しておく必要がある。
         /// </remarks>
         public void Make()
         {
+            if (TextureAtlasLoader == null)
+            {
+                throw new InvalidOperationException("TextureAtlasLoader is null.");
+            }
             var atlasFilePath = GetTextureAtlasFilePath();
             if (atlasFilePath == null)
             {
@@ -117,19 +127,7 @@ namespace ruche.mmm.tools.spriteMaker
             }
 
             // テクスチャアトラスファイル読み込み
-            TextureAtlas atlas = null;
-            try
-            {
-                atlas = TextureAtlas.Load(atlasFilePath);
-            }
-            catch (Exception ex)
-            {
-                throw new FileFormatException(
-                    string.Format(
-                        Resources.SpriteMakerFormat_BadAtlasFile,
-                        Path.GetFileName(atlasFilePath)),
-                    ex);
-            }
+            TextureAtlas atlas = LoadTextureAtlas(atlasFilePath);
 
             // アクセサリファイル書き出し
             var accMaker = new AccessoryFileMaker();
@@ -161,6 +159,40 @@ namespace ruche.mmm.tools.spriteMaker
                     string.Format(
                         Resources.SpriteMakerFormat_EffectFileFail,
                         Path.GetFileName(effectFilePath)),
+                    ex);
+            }
+        }
+
+        /// <summary>
+        /// テクスチャアトラスをロードする。
+        /// </summary>
+        /// <param name="atlasFilePath">ファイルパス。</param>
+        /// <returns>テクスチャアトラス。</returns>
+        private TextureAtlas LoadTextureAtlas(string atlasFilePath)
+        {
+            try
+            {
+                var atlas = TextureAtlasLoader(atlasFilePath);
+                if (atlas == null)
+                {
+                    throw new FileFormatException(
+                        string.Format(
+                            Resources.SpriteMakerFormat_BadAtlasFile,
+                            Path.GetFileName(atlasFilePath)));
+                }
+
+                return atlas;
+            }
+            catch (FileFormatException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileFormatException(
+                    string.Format(
+                        Resources.SpriteMakerFormat_BadAtlasFile,
+                        Path.GetFileName(atlasFilePath)),
                     ex);
             }
         }

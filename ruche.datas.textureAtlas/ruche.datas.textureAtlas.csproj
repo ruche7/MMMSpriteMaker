@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F2C2A23E-5CA6-47DB-8AE0-84DD36FB28C9}</ProjectGuid>
+    <ProjectGuid>{6D882D34-E828-4AA6-8796-C90943F89EC6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ruche.mmm.tools.spriteMaker</RootNamespace>
-    <AssemblyName>ruche.mmm.tools.spriteMaker</AssemblyName>
+    <RootNamespace>ruche.datas.textureAtlas</RootNamespace>
+    <AssemblyName>ruche.datas.textureAtlas</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -33,53 +33,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessoryFileMaker.cs" />
-    <Compile Include="EffectFileConfig.cs" />
-    <Compile Include="EffectFileMaker.cs" />
-    <Compile Include="ImageBasePoint.cs" />
-    <Compile Include="ImageFlipSetting.cs" />
-    <Compile Include="ImageRenderType.cs" />
-    <Compile Include="ImageRenderTypeFlags.cs" />
-    <Compile Include="ImageRenderTypeFlagsAttribute.cs" />
-    <Compile Include="LightSetting.cs" />
-    <Compile Include="MakerUtil.cs" />
+    <Compile Include="ITextureAtlasLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="resources\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SpriteMaker.cs" />
-    <Compile Include="TemplateReplaceIdAttribute.cs" />
-    <Compile Include="TextureAtlasPluginLoader.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\Resources.ja.resx" />
-    <EmbeddedResource Include="resources\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ruche.datas.textureAtlas\ruche.datas.textureAtlas.csproj">
-      <Project>{6d882d34-e828-4aa6-8796-c90943f89ec6}</Project>
-      <Name>ruche.datas.textureAtlas</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="resources\SpriteAccessory.x" />
-    <None Include="resources\SpriteEffect.fx" />
+    <Compile Include="TextureAtlas.cs" />
+    <Compile Include="TextureAtlasFrame.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

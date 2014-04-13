@@ -100,7 +100,7 @@ namespace MMMSpriteMaker.ViewModel
         private bool canUseLight = false;
 
         /// <summary>
-        /// ライトとセルフシャドウの有効設定を取得または設定する。
+        /// ライトとセルフシャドウの有効設定値を取得または設定する。
         /// </summary>
         public LightSetting LightSetting
         {

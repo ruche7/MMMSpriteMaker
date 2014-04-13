@@ -62,6 +62,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SettingsUtil.cs" />
+    <Compile Include="TextureAtlasLoaderFactory.cs" />
     <Compile Include="ViewModel\MakerViewModel.cs" />
     <Compile Include="ViewModel\ConfigViewModel.cs" />
     <Compile Include="View\ConfigWindow.xaml.cs">
@@ -100,13 +102,19 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ruche.datas.textureAtlas\ruche.datas.textureAtlas.csproj">
+      <Project>{6d882d34-e828-4aa6-8796-c90943f89ec6}</Project>
+      <Name>ruche.datas.textureAtlas</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ruche.mmm.tools.spriteMaker\ruche.mmm.tools.spriteMaker.csproj">
       <Project>{f2c2a23e-5ca6-47db-8ae0-84dd36fb28c9}</Project>
       <Name>ruche.mmm.tools.spriteMaker</Name>
@@ -117,6 +125,16 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>set LOADERS_NAME=ruche.datas.textureAtlas.loaders
+set LOADERS_DLL=$(SolutionDir)\%25LOADERS_NAME%25\$(OutDir)\%25LOADERS_NAME%25.dll
+
+if exist "%25LOADERS_DLL%25" (
+  echo copy "%25LOADERS_NAME%25.dll" to "$(OutDir)"
+  copy /Y "%25LOADERS_DLL%25" "$(TargetDir)"
+)
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

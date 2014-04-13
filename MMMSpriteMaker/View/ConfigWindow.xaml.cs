@@ -1,8 +1,6 @@
 ﻿using MMMSpriteMaker.ViewModel;
 using ruche.mmm.tools.spriteMaker;
 using System;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -52,10 +50,7 @@ namespace MMMSpriteMaker.View
         private void Window_PreviewDragOver(object sender, DragEventArgs e)
         {
             var items = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (
-                items != null &&
-                items.Length > 0 &&
-                items.Any(item => File.Exists(item)))
+            if (items != null && items.Length > 0)
             {
                 e.Effects = DragDropEffects.Copy;
                 e.Handled = true;
@@ -74,17 +69,23 @@ namespace MMMSpriteMaker.View
             var items = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (items != null && items.Length > 0)
             {
-                var files = items.Where(item => File.Exists(item)).ToArray();
-                if (files.Length > 0)
+                try
                 {
-                    // ファイルを処理
+                    // テクスチャアトラスローダ作成
+                    var loader = TextureAtlasLoaderFactory.Create();
+
+                    // 作成ウィンドウ起動
                     var makerWindow =
                         new View.MakerWindow(
-                            new ViewModel.MakerViewModel(EffectFileConfig, files));
+                            new ViewModel.MakerViewModel(EffectFileConfig, loader, items));
                     makerWindow.Show();
-
-                    e.Handled = true;
                 }
+                catch (Exception ex)
+                {
+                    App.ShowAlert(ex.Message, MessageBoxImage.Error);
+                }
+
+                e.Handled = true;
             }
         }
     }

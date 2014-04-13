@@ -198,4 +198,9 @@
   <data name="MakerWindow_Copy" xml:space="preserve">
     <value>クリップボードへコピー</value>
   </data>
+  <data name="TextureAtlasLoaderFactory_PluginNotFound" xml:space="preserve">
+    <value>テクスチャアトラスを読み込むためのプラグインが見つかりませんでした。
+プラグインファイルが移動または削除された可能性があります。
+プラグインファイルが見つからない場合、Webサイト等からツールを入手しなおしてください。</value>
+  </data>
 </root>

@@ -1,8 +1,10 @@
-﻿using ruche.mmm.tools.spriteMaker.resources;
+﻿using ruche.datas.textureAtlas;
+using ruche.mmm.tools.spriteMaker.resources;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace ruche.mmm.tools.spriteMaker
 {
@@ -11,6 +13,16 @@ namespace ruche.mmm.tools.spriteMaker
     /// </summary>
     public class EffectFileMaker
     {
+        /// <summary>
+        /// エフェクトファイル上で float 値を表す文字列を作成する。
+        /// </summary>
+        /// <param name="value">float 値。</param>
+        /// <returns>float 値を表す文字列。</returns>
+        private static string MakeFloatString(float value)
+        {
+            return string.Format("{0:0.0########}f", value);
+        }
+
         /// <summary>
         /// コンストラクタ。
         /// </summary>
@@ -84,22 +96,19 @@ namespace ruche.mmm.tools.spriteMaker
         [TemplateReplaceId]
         private string ConfigPixelRatio
         {
-            get { return string.Format("{0:0.0########}f", Config.GetPixelRatio()); }
+            get { return MakeFloatString(Config.GetPixelRatio()); }
         }
 
         [TemplateReplaceId]
         private string ConfigSpriteViewportWidth
         {
-            get
-            {
-                return string.Format("{0:0.0########}f", Config.GetSpriteViewportWidth());
-            }
+            get { return MakeFloatString(Config.GetSpriteViewportWidth()); }
         }
 
         [TemplateReplaceId]
         private string ConfigSpriteZRange
         {
-            get { return string.Format("{0:0.0########}f", Config.GetSpriteZRange()); }
+            get { return MakeFloatString(Config.GetSpriteZRange()); }
         }
 
         [TemplateReplaceId]
@@ -149,42 +158,63 @@ namespace ruche.mmm.tools.spriteMaker
                         from f in TextureAtlas.Frames
                         select
                             "        float2(" +
-                            (int)f.Size.Width + ", " + (int)f.Size.Height +
+                            MakeFloatString((float)f.Size.Width) + ", " +
+                            MakeFloatString((float)f.Size.Height) +
                             ") * SprMake_AtlasSizeMul,");
             }
+        }
+
+        private string MakeUVString(Func<TextureAtlasFrame, Point> uvPointSelector)
+        {
+            return
+                string.Join(
+                    Environment.NewLine,
+                    from f in TextureAtlas.Frames
+                    let pt = uvPointSelector(f)
+                    select
+                        "        float2(" +
+                        MakeFloatString((float)pt.X) + ", " +
+                        MakeFloatString((float)pt.Y) +
+                        ") * SprMake_AtlasUVMul,");
         }
 
         [TemplateReplaceId]
         private string AtlasUVLeftTops
         {
-            get
-            {
-                return
-                    string.Join(
-                        Environment.NewLine,
-                        from f in TextureAtlas.Frames
-                        let x = f.Rotated ? (f.LeftTop.X + f.Size.Height) : f.LeftTop.X
-                        select
-                            "        float2(" + (int)x + ", " + (int)f.LeftTop.Y +
-                            ") * SprMake_AtlasUVMul,");
-            }
+            get { return MakeUVString(f => f.LeftTopUVPoint); }
         }
 
         [TemplateReplaceId]
-        private string AtlasUVSizes
+        private string AtlasUVRightTops
         {
-            get
-            {
-                return
-                    string.Join(
-                        Environment.NewLine,
-                        from f in TextureAtlas.Frames
-                        let w = f.Rotated ? -f.Size.Height : f.Size.Width
-                        let h = f.Rotated ? f.Size.Width : f.Size.Height
-                        select
-                            "        float2(" + (int)w + ", " + (int)h +
-                            ") * SprMake_AtlasUVMul,");
-            }
+            get { return MakeUVString(f => f.RightTopUVPoint); }
+        }
+
+        [TemplateReplaceId]
+        private string AtlasUVRightBottoms
+        {
+            get { return MakeUVString(f => f.RightBottomUVPoint); }
+        }
+
+        [TemplateReplaceId]
+        private string AtlasUVLeftBottoms
+        {
+            get { return MakeUVString(f => f.LeftBottomUVPoint); }
+        }
+
+        private string MakeSelectAtlasIfElseBlockCode(int index, string indent)
+        {
+            return
+                indent +
+                string.Join(
+                    Environment.NewLine + indent,
+                    "{",
+                    "    Out.Size = SprMake_AtlasSizes[" + index + "];",
+                    "    Out.UVLeftTop = SprMake_AtlasUVLeftTops[" + index + "];",
+                    "    Out.UVRightTop = SprMake_AtlasUVRightTops[" + index + "];",
+                    "    Out.UVRightBottom = SprMake_AtlasUVRightBottoms[" + index + "];",
+                    "    Out.UVLeftBottom = SprMake_AtlasUVLeftBottoms[" + index + "];",
+                    "}");
         }
 
         [TemplateReplaceId]
@@ -192,6 +222,7 @@ namespace ruche.mmm.tools.spriteMaker
         {
             get
             {
+                var indent = "    ";
                 return
                     string.Join(
                         Environment.NewLine,
@@ -200,14 +231,8 @@ namespace ruche.mmm.tools.spriteMaker
                         let else_ = (i > 0) ? "else " : ""
                         let if_ = (ri > 0) ? ("if (SprMake_AtlasIndex >= " + ri + ")") : ""
                         select
-                            string.Join(
-                                Environment.NewLine + "    ",
-                                "    " + else_ + if_,
-                                "{",
-                                "    Out.Size = SprMake_AtlasSizes[" + ri + "];",
-                                "    Out.LeftTopUV = SprMake_AtlasUVLeftTops[" + ri + "];",
-                                "    Out.UVSize = SprMake_AtlasUVSizes[" + ri + "];",
-                                "}"));
+                            indent + else_ + if_ + Environment.NewLine +
+                            MakeSelectAtlasIfElseBlockCode(ri, indent));
             }
         }
 

@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:v="http://ruche-home.net/xaml/wpf/view"
+    xmlns:app="clr-namespace:MMMSpriteMaker"
     xmlns:prop="clr-namespace:MMMSpriteMaker.Properties"
     x:Class="MMMSpriteMaker.View.MakerWindow"
     Title="{Binding ViewCaption}"
@@ -49,7 +50,7 @@
             </StackPanel>
             <CheckBox
                 Content="{x:Static prop:Resources.MakerWindow_AutoClose}"
-                IsChecked="{Binding AutoCloseAtSucceeded, Source={x:Static prop:Settings.Default}}"
+                IsChecked="{Binding AutoCloseAtSucceeded, Source={x:Static app:App.Settings}}"
                 VerticalAlignment="Center"
                 Margin="4,4,8,4"
                 TabIndex="2"
