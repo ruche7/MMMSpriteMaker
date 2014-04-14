@@ -52,6 +52,7 @@
             <CheckBox
                 Content="{x:Static res:Resources.MakerWindow_AutoClose}"
                 IsChecked="{Binding AutoCloseAtSucceeded, Source={x:Static app:App.Settings}}"
+                HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Margin="4,4,8,4"
                 TabIndex="2"

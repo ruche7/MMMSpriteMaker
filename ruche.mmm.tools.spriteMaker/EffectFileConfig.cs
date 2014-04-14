@@ -62,7 +62,7 @@ namespace ruche.mmm.tools.spriteMaker
         /// <remarks>
         /// 実際に利用される設定値は GetLightSetting メソッドで取得すること。
         /// </remarks>
-        [DefaultValue(typeof(LightSetting), "Disabled")]
+        [DefaultValue(typeof(LightSetting), "Selectable")]
         public LightSetting LightSetting
         {
             get { return (LightSetting)this["LightSetting"]; }
@@ -184,7 +184,7 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// イメージの左右反転設定値を取得または設定する。
         /// </summary>
-        [DefaultValue(typeof(ImageFlipSetting), "NotFlip")]
+        [DefaultValue(typeof(ImageFlipSetting), "Selectable")]
         public ImageFlipSetting HorizontalFlipSetting
         {
             get { return (ImageFlipSetting)this["HorizontalFlipSetting"]; }
@@ -194,7 +194,7 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// イメージの上下反転設定値を取得または設定する。
         /// </summary>
-        [DefaultValue(typeof(ImageFlipSetting), "NotFlip")]
+        [DefaultValue(typeof(ImageFlipSetting), "Selectable")]
         public ImageFlipSetting VerticalFlipSetting
         {
             get { return (ImageFlipSetting)this["VerticalFlipSetting"]; }

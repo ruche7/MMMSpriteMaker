@@ -36,6 +36,7 @@ namespace ruche.mmm.tools.spriteMaker
             Name = "Enum_ImageRenderType_Billboard",
             ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
+            ImageRenderTypeFlags.CanRenderBack |
             ImageRenderTypeFlags.CanUseLight |
             ImageRenderTypeFlags.UsePixelRatio)]
         Billboard = 2,
