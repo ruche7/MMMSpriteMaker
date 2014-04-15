@@ -62,7 +62,7 @@ namespace ruche.mmm.tools.spriteMaker
         /// <remarks>
         /// 実際に利用される設定値は GetLightSetting メソッドで取得すること。
         /// </remarks>
-        [DefaultValue(typeof(LightSetting), "Selectable")]
+        [DefaultValue(typeof(LightSetting), "Disabled")]
         public LightSetting LightSetting
         {
             get { return (LightSetting)this["LightSetting"]; }
