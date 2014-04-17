@@ -907,7 +907,7 @@ technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; >
 {
 #if SPRMAKE_CONFIG_LIGHT != 0
 
-    pass DrawShadow0
+    pass DrawZplot0
     {
 #if SPRMAKE_CONFIG_RENDERBACK > 0
         CullMode = NONE;
@@ -920,7 +920,7 @@ technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; >
 
 #ifdef MIKUMIKUMOVING
 
-    pass DrawShadow1
+    pass DrawZplot1
     {
 #if SPRMAKE_CONFIG_RENDERBACK > 0
         CullMode = NONE;
@@ -931,7 +931,7 @@ technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; >
         PixelShader  = compile ps_3_0 SprMake_ZplotPS(1);
     }
 
-    pass DrawShadow2
+    pass DrawZplot2
     {
 #if SPRMAKE_CONFIG_RENDERBACK > 0
         CullMode = NONE;
