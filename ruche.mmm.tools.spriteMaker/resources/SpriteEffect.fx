@@ -23,6 +23,11 @@
 // 2:Selectable (MMM only)
 #define SPRMAKE_CONFIG_LIGHT [[ConfigLightSetting]]
 
+// 0:Disabled
+// 1:Enabled
+// 2:Selectable (MMM only)
+#define SPRMAKE_CONFIG_SHADOW [[ConfigLightSetting]]
+
 // Size per pixel (default = 0.1f)
 #define SPRMAKE_CONFIG_PIXELRATIO [[ConfigPixelRatio]]
 
@@ -54,7 +59,7 @@
 #define SPRMAKE_CONFIG_FLIP_V [[ConfigVerticalFlipSetting]]
 
 // Shadow alpha clipping value (default = 0.95f)
-#define SPRMAKE_CLIP_SHADOW_ALPHA 0.95f
+#define SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA 0.95f
 
 //--------------------------------------
 
@@ -72,6 +77,8 @@
 #ifdef SPRMAKE_RENDER_SPRITE
     #undef SPRMAKE_CONFIG_LIGHT
     #define SPRMAKE_CONFIG_LIGHT 0
+    #undef SPRMAKE_CONFIG_SHADOW
+    #define SPRMAKE_CONFIG_SHADOW 0
 #endif
 
 //----------------------------------------------------------
@@ -176,33 +183,67 @@ float4x4 ProjMatrix : PROJECTION;
 
 float3 CameraPosition : POSITION < string Object = "Camera"; >;
 
+// Texture
+texture ObjectTexture : MATERIALTEXTURE;
+sampler ObjTexSampler =
+    sampler_state
+    {
+        texture = <ObjectTexture>;
+        MINFILTER = LINEAR;
+        MAGFILTER = LINEAR;
+#if !defined(MIKUMIKUMOVING) && defined(MME_MIPMAP)
+        MIPFILTER = LINEAR;
+#endif
+        AddressU = BORDER;
+        AddressV = BORDER;
+        BorderColor = float4(0, 0, 0, 0);
+    };
+
+// Accessory
+#ifdef SPRMAKE_RENDER_SPRITE
+float3 AccPos : CONTROLOBJECT < string name = "(self)"; >;
+#endif
+float AccTrans : CONTROLOBJECT < string name = "(self)"; string item = "Tr"; >;
+
 // Material
 float4 MaterialDiffuse : DIFFUSE < string Object = "Geometry"; >;
 
+//--------------------------------------
+// For light and shadow
+//--------------------------------------
+#if SPRMAKE_CONFIG_LIGHT != 0 || SPRMAKE_CONFIG_SHADOW != 0
+#ifdef MIKUMIKUMOVING
+// for MikuMikuMoving
+
+bool LightEnables[MMM_LightCount] : LIGHTENABLES;
+float3 LightDirections[MMM_LightCount] : LIGHTDIRECTIONS;
+
+#else // MIKUMIKUMOVING
+// for MikuMikuEffect
+
+float3 LightDirection : DIRECTION < string Object = "Light"; >;
+
+#endif // MIKUMIKUMOVING
+#endif // SPRMAKE_CONFIG_LIGHT != 0 || SPRMAKE_CONFIG_SHADOW != 0
+
+//--------------------------------------
+// For light
+//--------------------------------------
 #if SPRMAKE_CONFIG_LIGHT != 0
 
-// Material (for Light)
+// Material
 float3 MaterialAmbient : AMBIENT < string Object = "Geometry"; >;
 float3 MaterialEmmisive : EMISSIVE < string Object = "Geometry"; >;
 float3 MaterialSpecular : SPECULAR < string Object = "Geometry"; >;
 float SpecularPower : SPECULARPOWER < string Object = "Geometry"; >;
-float4 MaterialToon : TOONCOLOR;
-float4 GroundShadowColor : GROUNDSHADOWCOLOR;
 
 #ifdef MIKUMIKUMOVING
 // for MikuMikuMoving
 
 // Light
-bool LightEnables[MMM_LightCount] : LIGHTENABLES;
-float3 LightDirections[MMM_LightCount] : LIGHTDIRECTIONS;
 float3 LightDiffuses[MMM_LightCount] : LIGHTDIFFUSECOLORS;
 float3 LightAmbients[MMM_LightCount] : LIGHTAMBIENTCOLORS;
 float3 LightSpeculars[MMM_LightCount] : LIGHTSPECULARCOLORS;
-
-// Light for SelfShadow
-float4x4 LightWVPMatrices[MMM_LightCount] : LIGHTWVPMATRICES;
-float3 LightPositions[MMM_LightCount] : LIGHTPOSITIONS;
-float LightZFars[MMM_LightCount] : LIGHTZFARS;
 
 // Material & Light colors
 static float4 DiffuseColors[3] =
@@ -228,13 +269,9 @@ static float3 SpecularColors[3] =
 // for MikuMikuEffect
 
 // Light
-float3 LightDirection : DIRECTION < string Object = "Light"; >;
 float3 LightDiffuse : DIFFUSE < string Object = "Light"; >;
 float3 LightAmbient : AMBIENT < string Object = "Light"; >;
 float3 LightSpecular : SPECULAR < string Object = "Light"; >;
-
-// Light for SelfShadow
-float4x4 LightWVPMatrix : WORLDVIEWPROJECTION < string Object = "Light"; >;
 
 // Material & Light colors
 static float4 DiffuseColor = MaterialDiffuse * float4(LightDiffuse, 1.0f);
@@ -244,27 +281,28 @@ static float3 SpecularColor = MaterialSpecular * LightSpecular;
 #endif // MIKUMIKUMOVING
 #endif // SPRMAKE_CONFIG_LIGHT != 0
 
-// Texture
-texture ObjectTexture : MATERIALTEXTURE;
-sampler ObjTexSampler =
-    sampler_state
-    {
-        texture = <ObjectTexture>;
-        MINFILTER = LINEAR;
-        MAGFILTER = LINEAR;
-#if !defined(MIKUMIKUMOVING) && defined(MME_MIPMAP)
-        MIPFILTER = LINEAR;
-#endif
-        AddressU = BORDER;
-        AddressV = BORDER;
-        BorderColor = float4(0, 0, 0, 0);
-    };
+//--------------------------------------
+// For shadow
+//--------------------------------------
+#if SPRMAKE_CONFIG_SHADOW != 0
 
-// Accessory
-#ifdef SPRMAKE_RENDER_SPRITE
-float3 AccPos : CONTROLOBJECT < string name = "(self)"; >;
-#endif
-float AccTrans : CONTROLOBJECT < string name = "(self)"; string item = "Tr"; >;
+float4 MaterialToon : TOONCOLOR;
+float4 GroundShadowColor : GROUNDSHADOWCOLOR;
+
+#ifdef MIKUMIKUMOVING
+// for MikuMikuMoving
+
+float4x4 LightWVPMatrices[MMM_LightCount] : LIGHTWVPMATRICES;
+float3 LightPositions[MMM_LightCount] : LIGHTPOSITIONS;
+float LightZFars[MMM_LightCount] : LIGHTZFARS;
+
+#else // MIKUMIKUMOVING
+// for MikuMikuEffect
+
+float4x4 LightWVPMatrix : WORLDVIEWPROJECTION < string Object = "Light"; >;
+
+#endif // MIKUMIKUMOVING
+#endif // SPRMAKE_CONFIG_SHADOW != 0
 
 //----------------------------------------------------------
 // Controls (for MikuMikuMoving)
@@ -280,16 +318,20 @@ int SprMake_AtlasIndex <
 static int SprMake_AtlasIndex = 0;
 #endif
 
+#if SPRMAKE_CONFIG_LIGHT > 1
+bool SprMake_LightEnabled < string UIName = "Light"; > = true;
+#endif
+
+#if SPRMAKE_CONFIG_SHADOW > 1
+bool SprMake_ShadowEnabled < string UIName = "Shadow"; > = true;
+#endif
+
 #if SPRMAKE_CONFIG_FLIP_H > 1
 bool SprMake_FlipHorz < string UIName = "Flip_H"; > = false;
 #endif
 
 #if SPRMAKE_CONFIG_FLIP_V > 1
 bool SprMake_FlipVert < string UIName = "Flip_V"; > = false;
-#endif
-
-#if SPRMAKE_CONFIG_LIGHT > 1
-bool SprMake_LightEnabled < string UIName = "Light"; > = true;
 #endif
 
 //----------------------------------------------------------
@@ -454,14 +496,16 @@ struct VS_OUTPUT
     float2 Tex : TEXCOORD0;
     float3 Normal : TEXCOORD1;
     float4 Color : COLOR0;
+
 #if SPRMAKE_CONFIG_LIGHT != 0
     float3 Eye : TEXCOORD2;
-#ifdef MIKUMIKUMOVING
+#endif // SPRMAKE_CONFIG_LIGHT != 0
+
+#if SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
     float4 SS_UV1 : TEXCOORD3;
     float4 SS_UV2 : TEXCOORD4;
     float4 SS_UV3 : TEXCOORD5;
-#endif // MIKUMIKUMOVING
-#endif // SPRMAKE_CONFIG_LIGHT != 0
+#endif // SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
 };
 
 //--------------------------------------
@@ -495,11 +539,10 @@ VS_OUTPUT SprMake_VS(
             atlasInfo.UVRightBottom,
             atlasInfo.UVLeftBottom);
 
-#if SPRMAKE_CONFIG_LIGHT == 0
+    Out.Color = float4(1, 1, 1, 1);
 
-    Out.Color.rgb = float3(1, 1, 1);
-
-#else // SPRMAKE_CONFIG_LIGHT == 0
+    // Light ---->
+#if SPRMAKE_CONFIG_LIGHT != 0
 
     Out.Eye = CameraPosition - wpos.xyz;
 
@@ -524,19 +567,6 @@ VS_OUTPUT SprMake_VS(
         }
         Out.Color.rgb = saturate(ambient / count + color);
 
-        if (useSelfShadow)
-        {
-            Out.SS_UV1 = mul(wpos, LightWVPMatrices[0]);
-            Out.SS_UV2 = mul(wpos, LightWVPMatrices[1]);
-            Out.SS_UV3 = mul(wpos, LightWVPMatrices[2]);
-            Out.SS_UV1.y = -Out.SS_UV1.y;
-            Out.SS_UV2.y = -Out.SS_UV2.y;
-            Out.SS_UV3.y = -Out.SS_UV3.y;
-            Out.SS_UV1.z = (length(LightPositions[0] - wpos.xyz) / LightZFars[0]);
-            Out.SS_UV2.z = (length(LightPositions[1] - wpos.xyz) / LightZFars[1]);
-            Out.SS_UV3.z = (length(LightPositions[2] - wpos.xyz) / LightZFars[2]);
-        }
-
 #else // MIKUMIKUMOVING
         // for MikuMikuEffect
 
@@ -547,13 +577,33 @@ VS_OUTPUT SprMake_VS(
 #endif // MIKUMIKUMOVING
 #if SPRMAKE_CONFIG_LIGHT > 1
     }
-    else
-    {
-        Out.Color.rgb = float3(1, 1, 1);
-    }
 #endif // SPRMAKE_CONFIG_LIGHT > 1
 
-#endif // SPRMAKE_CONFIG_LIGHT == 0
+#endif // SPRMAKE_CONFIG_LIGHT != 0
+    // <---- Light
+
+    // Shadow ---->
+#if SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
+
+#if SPRMAKE_CONFIG_SHADOW > 1
+    if (useSelfShadow && SprMake_ShadowEnabled)
+#else
+    if (useSelfShadow)
+#endif // SPRMAKE_CONFIG_SHADOW > 1
+    {
+        Out.SS_UV1 = mul(wpos, LightWVPMatrices[0]);
+        Out.SS_UV2 = mul(wpos, LightWVPMatrices[1]);
+        Out.SS_UV3 = mul(wpos, LightWVPMatrices[2]);
+        Out.SS_UV1.y = -Out.SS_UV1.y;
+        Out.SS_UV2.y = -Out.SS_UV2.y;
+        Out.SS_UV3.y = -Out.SS_UV3.y;
+        Out.SS_UV1.z = (length(LightPositions[0] - wpos.xyz) / LightZFars[0]);
+        Out.SS_UV2.z = (length(LightPositions[1] - wpos.xyz) / LightZFars[1]);
+        Out.SS_UV3.z = (length(LightPositions[2] - wpos.xyz) / LightZFars[2]);
+    }
+
+#endif // SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
+    // <---- Shadow
 
     Out.Color.a = MaterialDiffuse.a;
 
@@ -567,17 +617,38 @@ float4 SprMake_PS(VS_OUTPUT IN, uniform bool useSelfShadow) : COLOR0
 {
     float4 Out = IN.Color * tex2D(ObjTexSampler, IN.Tex);
 
+    // Shadow ---->
+#if SPRMAKE_CONFIG_SHADOW != 0
+#ifdef MIKUMIKUMOVING
+    // for MikuMikuMoving
+
+#if SPRMAKE_CONFIG_SHADOW > 1
+    if (useSelfShadow && SprMake_ShadowEnabled)
+#else
+    if (useSelfShadow)
+#endif // SPRMAKE_CONFIG_SHADOW > 1
+    {
+        Out.rgb *= MMM_GetSelfShadowToonColor(MaterialToon, IN.Normal, IN.SS_UV1, IN.SS_UV2, IN.SS_UV3, false, false);
+    }
+
+#else // MIKUMIKUMOVING
+    // for MikuMikuEffect
+
+    // TODO:
+
+#endif // MIKUMIKUMOVING
+#endif // SPRMAKE_CONFIG_SHADOW != 0
+    // <-- Shadow
+
+    // Light ---->
 #if SPRMAKE_CONFIG_LIGHT != 0
 #ifdef MIKUMIKUMOVING
+    // for MikuMikuMoving
+
 #if SPRMAKE_CONFIG_LIGHT > 1
     if (SprMake_LightEnabled)
     {
 #endif // SPRMAKE_CONFIG_LIGHT > 1
-        if (useSelfShadow)
-        {
-            Out.rgb *= MMM_GetSelfShadowToonColor(MaterialToon, IN.Normal, IN.SS_UV1, IN.SS_UV2, IN.SS_UV3, false, false);
-        }
-
         float3 specular = 0;
         float3 halfVector;
         for (int i = 0; i < 3; ++i)
@@ -592,8 +663,15 @@ float4 SprMake_PS(VS_OUTPUT IN, uniform bool useSelfShadow) : COLOR0
 #if SPRMAKE_CONFIG_LIGHT > 1
     }
 #endif // SPRMAKE_CONFIG_LIGHT > 1
+
+#else // MIKUMIKUMOVING
+    // for MikuMikuEffect
+
+    // TODO:
+
 #endif // MIKUMIKUMOVING
 #endif // SPRMAKE_CONFIG_LIGHT != 0
+    // <---- Light
 
     Out.a *= AccTrans;
 
@@ -644,7 +722,7 @@ technique MainTecSS < string MMDPass = "object_ss"; bool UseTexture = true; bool
 // Shader for shadow
 //----------------------------------------------------------
 
-#if SPRMAKE_CONFIG_LIGHT != 0
+#if SPRMAKE_CONFIG_SHADOW != 0
 
 // Vertex shader output for shadow
 struct VS_SHADOW_OUTPUT
@@ -660,24 +738,24 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
 {
     VS_SHADOW_OUTPUT Out = (VS_SHADOW_OUTPUT)0;
 
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-#if SPRMAKE_CONFIG_LIGHT > 1 && defined(MIKUMIKUMOVING)
-    if (SprMake_LightEnabled && LightEnables[lightIndex])
-#elif SPRMAKE_CONFIG_LIGHT > 1
-    if (SprMake_LightEnabled)
+#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+#if SPRMAKE_CONFIG_SHADOW > 1 && defined(MIKUMIKUMOVING)
+    if (SprMake_ShadowEnabled && LightEnables[lightIndex])
+#elif SPRMAKE_CONFIG_SHADOW > 1
+    if (SprMake_ShadowEnabled)
 #else // if defined(MIKUMIKUMOVING)
     if (LightEnables[lightIndex])
 #endif
     {
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+
+        static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
 
 #ifdef MIKUMIKUMOVING
         float3 lightDir = LightDirections[lightIndex];
 #else
         uniform float3 lightDir = LightDirection;
 #endif
-
-        static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
 
         float4 wpos =
             SprMake_CalcWorldPosition(
@@ -697,9 +775,9 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
                 atlasInfo.UVRightBottom,
                 atlasInfo.UVLeftBottom);
 
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
     }
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
 
     return Out;
 }
@@ -709,45 +787,34 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
 //--------------------------------------
 float4 SprMake_ShadowPS(float2 Tex : TEXCOORD0, uniform int lightIndex) : COLOR
 {
+#ifdef MIKUMIKUMOVING
+    clip(-float(!LightEnables[lightIndex]));
+#endif // MIKUMIKUMOVING
+
+#if SPRMAKE_CONFIG_SHADOW > 1
+    clip(-float(!SprMake_ShadowEnabled));
+#endif // SPRMAKE_CONFIG_SHADOW > 1
+
     float4 Out = float4(0, 0, 0, 0);
 
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-#if SPRMAKE_CONFIG_LIGHT > 1 && defined(MIKUMIKUMOVING)
-    if (SprMake_LightEnabled && LightEnables[lightIndex])
-#elif SPRMAKE_CONFIG_LIGHT > 1
-    if (SprMake_LightEnabled)
-#else // if defined(MIKUMIKUMOVING)
-    if (LightEnables[lightIndex])
-#endif
-    {
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+    float texAlpha = tex2D(ObjTexSampler, Tex).a;
+    clip(texAlpha - SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA);
 
-        float texAlpha = tex2D(ObjTexSampler, Tex).a;
-        clip(texAlpha - SPRMAKE_CLIP_SHADOW_ALPHA);
-
-        Out = GroundShadowColor;
-        Out.a *= texAlpha * AccTrans;
-        clip(Out.a - 0.001f);
-
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-    }
-    else
-    {
-        clip(-1);
-    }
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+    Out = GroundShadowColor;
+    Out.a *= texAlpha * AccTrans;
+    clip(Out.a - 0.001f);
 
     return Out;
 }
 
-#endif // SPRMAKE_CONFIG_LIGHT != 0
+#endif // SPRMAKE_CONFIG_SHADOW != 0
 
 //--------------------------------------
 // Technique for shadow
 //--------------------------------------
 technique ShadowTec < string MMDPass = "shadow"; bool UseToon = false; >
 {
-#if SPRMAKE_CONFIG_LIGHT != 0
+#if SPRMAKE_CONFIG_SHADOW != 0
 
     pass DrawShadow0
     {
@@ -782,14 +849,14 @@ technique ShadowTec < string MMDPass = "shadow"; bool UseToon = false; >
     }
 
 #endif // MIKUMIKUMOVING
-#endif // SPRMAKE_CONFIG_LIGHT != 0
+#endif // SPRMAKE_CONFIG_SHADOW != 0
 }
 
 //----------------------------------------------------------
 // Shader for zplot
 //----------------------------------------------------------
 
-#if SPRMAKE_CONFIG_LIGHT != 0
+#if SPRMAKE_CONFIG_SHADOW != 0
 
 // Vertex shader output for zplot
 struct VS_ZPLOT_OUTPUT
@@ -806,16 +873,16 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION, uniform int lightIndex)
 {
     VS_ZPLOT_OUTPUT Out = (VS_ZPLOT_OUTPUT)0;
 
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-#if SPRMAKE_CONFIG_LIGHT > 1 && defined(MIKUMIKUMOVING)
-    if (SprMake_LightEnabled && LightEnables[lightIndex])
-#elif SPRMAKE_CONFIG_LIGHT > 1
-    if (SprMake_LightEnabled)
+#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+#if SPRMAKE_CONFIG_SHADOW > 1 && defined(MIKUMIKUMOVING)
+    if (SprMake_ShadowEnabled && LightEnables[lightIndex])
+#elif SPRMAKE_CONFIG_SHADOW > 1
+    if (SprMake_ShadowEnabled)
 #else // if defined(MIKUMIKUMOVING)
     if (LightEnables[lightIndex])
 #endif
     {
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
 
         static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
 
@@ -830,10 +897,10 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION, uniform int lightIndex)
                 WorldMatrix);
         Out.Pos = mul(wpos, LightWVPMatrices[lightIndex]);
 
-        Out.ShadowMapTex = wpos;
+        Out.ShadowMapTex = Out.Pos;
         Out.ShadowMapTex.y = -Out.ShadowMapTex.y;
         Out.ShadowMapTex.z =
-            (length(LightPositions[lightIndex] - wpos.xyz) / LightZFars[lightIndex]);
+            length(LightPositions[lightIndex] - wpos.xyz) / LightZFars[lightIndex];
 
 #else // MIKUMIKUMOVING
         // for MikuMikuEffect
@@ -853,9 +920,9 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION, uniform int lightIndex)
                 atlasInfo.UVRightBottom,
                 atlasInfo.UVLeftBottom);
 
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
     }
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
 
     return Out;
 }
@@ -868,36 +935,21 @@ float4 SprMake_ZplotPS(
     float4 ShadowMapTex : TEXCOORD1,
     uniform int lightIndex) : COLOR
 {
-    float4 Out = float4(1, 0, 0, 1);
+#ifdef MIKUMIKUMOVING
+    clip(-float(!LightEnables[lightIndex]));
+#endif // MIKUMIKUMOVING
 
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-#if SPRMAKE_CONFIG_LIGHT > 1 && defined(MIKUMIKUMOVING)
-    if (SprMake_LightEnabled && LightEnables[lightIndex])
-#elif SPRMAKE_CONFIG_LIGHT > 1
-    if (SprMake_LightEnabled)
-#else // if defined(MIKUMIKUMOVING)
-    if (LightEnables[lightIndex])
-#endif
-    {
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
+#if SPRMAKE_CONFIG_SHADOW > 1
+    clip(-float(!SprMake_ShadowEnabled));
+#endif // SPRMAKE_CONFIG_SHADOW > 1
 
-        float alpha = tex2D(ObjTexSampler, Tex).a * AccTrans;
-        clip(alpha - 0.001f);
+    float alpha = tex2D(ObjTexSampler, Tex).a * AccTrans;
+    clip(alpha - 0.001f);
 
-        Out = float4(ShadowMapTex.z / ShadowMapTex.w, 0, 0, 1);
-
-#if SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-    }
-    else
-    {
-        clip(-1);
-    }
-#endif // SPRMAKE_CONFIG_LIGHT > 1 || defined(MIKUMIKUMOVING)
-
-    return Out;
+    return float4(ShadowMapTex.z / ShadowMapTex.w, 0, 0, 1);
 }
 
-#endif // SPRMAKE_CONFIG_LIGHT != 0
+#endif // SPRMAKE_CONFIG_SHADOW != 0
 
 //--------------------------------------
 // Technique for zplot
@@ -905,7 +957,7 @@ float4 SprMake_ZplotPS(
 
 technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; >
 {
-#if SPRMAKE_CONFIG_LIGHT != 0
+#if SPRMAKE_CONFIG_SHADOW != 0
 
     pass DrawZplot0
     {
@@ -943,7 +995,7 @@ technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; >
     }
 
 #endif // MIKUMIKUMOVING
-#endif // SPRMAKE_CONFIG_LIGHT != 0
+#endif // SPRMAKE_CONFIG_SHADOW != 0
 }
 
 //----------------------------------------------------------
