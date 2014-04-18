@@ -25,8 +25,7 @@
 
 // 0:Disabled
 // 1:Enabled
-// 2:Selectable (MMM only)
-#define SPRMAKE_CONFIG_SHADOW [[ConfigLightSetting]]
+#define SPRMAKE_CONFIG_SHADOW 1
 
 // Size per pixel (default = 0.1f)
 #define SPRMAKE_CONFIG_PIXELRATIO [[ConfigPixelRatio]]
@@ -58,8 +57,11 @@
 // 2:Selectable (MMM only)
 #define SPRMAKE_CONFIG_FLIP_V [[ConfigVerticalFlipSetting]]
 
-// Shadow alpha clipping value (default = 0.95f)
-#define SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA 0.95f
+// Ground shadow alpha clipping value (default = 0.95f)
+#define SPRMAKE_CONFIG_CLIP_GROUNDSHADOW_ALPHA 0.95f
+
+// Shadow alpha clipping value (default = 0.01f)
+#define SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA 0.01f
 
 //--------------------------------------
 
@@ -322,10 +324,6 @@ static int SprMake_AtlasIndex = 0;
 bool SprMake_LightEnabled < string UIName = "Light"; > = true;
 #endif
 
-#if SPRMAKE_CONFIG_SHADOW > 1
-bool SprMake_ShadowEnabled < string UIName = "Shadow"; > = true;
-#endif
-
 #if SPRMAKE_CONFIG_FLIP_H > 1
 bool SprMake_FlipHorz < string UIName = "Flip_H"; > = false;
 #endif
@@ -494,17 +492,17 @@ struct VS_OUTPUT
 {
     float4 Pos : POSITION;
     float2 Tex : TEXCOORD0;
-    float3 Normal : TEXCOORD1;
+    float3 Normal : TEXCOORD2;
     float4 Color : COLOR0;
 
 #if SPRMAKE_CONFIG_LIGHT != 0
-    float3 Eye : TEXCOORD2;
+    float3 Eye : TEXCOORD3;
 #endif // SPRMAKE_CONFIG_LIGHT != 0
 
 #if SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
-    float4 SS_UV1 : TEXCOORD3;
-    float4 SS_UV2 : TEXCOORD4;
-    float4 SS_UV3 : TEXCOORD5;
+    float4 SS_UV1 : TEXCOORD4;
+    float4 SS_UV2 : TEXCOORD5;
+    float4 SS_UV3 : TEXCOORD6;
 #endif // SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
 };
 
@@ -585,11 +583,7 @@ VS_OUTPUT SprMake_VS(
     // Shadow ---->
 #if SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
 
-#if SPRMAKE_CONFIG_SHADOW > 1
-    if (useSelfShadow && SprMake_ShadowEnabled)
-#else
     if (useSelfShadow)
-#endif // SPRMAKE_CONFIG_SHADOW > 1
     {
         Out.SS_UV1 = mul(wpos, LightWVPMatrices[0]);
         Out.SS_UV2 = mul(wpos, LightWVPMatrices[1]);
@@ -622,11 +616,7 @@ float4 SprMake_PS(VS_OUTPUT IN, uniform bool useSelfShadow) : COLOR0
 #ifdef MIKUMIKUMOVING
     // for MikuMikuMoving
 
-#if SPRMAKE_CONFIG_SHADOW > 1
-    if (useSelfShadow && SprMake_ShadowEnabled)
-#else
     if (useSelfShadow)
-#endif // SPRMAKE_CONFIG_SHADOW > 1
     {
         Out.rgb *= MMM_GetSelfShadowToonColor(MaterialToon, IN.Normal, IN.SS_UV1, IN.SS_UV2, IN.SS_UV3, false, false);
     }
@@ -689,9 +679,9 @@ technique MainTec < string MMDPass = "object"; bool UseTexture = true; bool UseT
 {
     pass DrawObject
     {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
+#if SPRMAKE_CONFIG_RENDERBACK != 0
         CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+#endif // SPRMAKE_CONFIG_RENDERBACK != 0
 
         VertexShader = compile vs_3_0 SprMake_VS(false);
         PixelShader  = compile ps_3_0 SprMake_PS(false);
@@ -709,9 +699,9 @@ technique MainTecSS < string MMDPass = "object_ss"; bool UseTexture = true; bool
 {
     pass DrawObject
     {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
+#if SPRMAKE_CONFIG_RENDERBACK != 0
         CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+#endif // SPRMAKE_CONFIG_RENDERBACK != 0
 
         VertexShader = compile vs_3_0 SprMake_VS(true);
         PixelShader  = compile ps_3_0 SprMake_PS(true);
@@ -738,16 +728,10 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
 {
     VS_SHADOW_OUTPUT Out = (VS_SHADOW_OUTPUT)0;
 
-#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
-#if SPRMAKE_CONFIG_SHADOW > 1 && defined(MIKUMIKUMOVING)
-    if (SprMake_ShadowEnabled && LightEnables[lightIndex])
-#elif SPRMAKE_CONFIG_SHADOW > 1
-    if (SprMake_ShadowEnabled)
-#else // if defined(MIKUMIKUMOVING)
+#ifdef MIKUMIKUMOVING
     if (LightEnables[lightIndex])
-#endif
     {
-#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+#endif // MIKUMIKUMOVING
 
         static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
 
@@ -775,9 +759,9 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
                 atlasInfo.UVRightBottom,
                 atlasInfo.UVLeftBottom);
 
-#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+#ifdef MIKUMIKUMOVING
     }
-#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+#endif // MIKUMIKUMOVING
 
     return Out;
 }
@@ -791,18 +775,14 @@ float4 SprMake_ShadowPS(float2 Tex : TEXCOORD0, uniform int lightIndex) : COLOR
     clip(-float(!LightEnables[lightIndex]));
 #endif // MIKUMIKUMOVING
 
-#if SPRMAKE_CONFIG_SHADOW > 1
-    clip(-float(!SprMake_ShadowEnabled));
-#endif // SPRMAKE_CONFIG_SHADOW > 1
-
     float4 Out = float4(0, 0, 0, 0);
 
     float texAlpha = tex2D(ObjTexSampler, Tex).a;
-    clip(texAlpha - SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA);
+    clip(texAlpha - SPRMAKE_CONFIG_CLIP_GROUNDSHADOW_ALPHA);
 
     Out = GroundShadowColor;
     Out.a *= texAlpha * AccTrans;
-    clip(Out.a - 0.001f);
+    clip(Out.a - SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA);
 
     return Out;
 }
@@ -818,9 +798,9 @@ technique ShadowTec < string MMDPass = "shadow"; bool UseToon = false; >
 
     pass DrawShadow0
     {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
+#if SPRMAKE_CONFIG_RENDERBACK != 0
         CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+#endif // SPRMAKE_CONFIG_RENDERBACK != 0
 
         VertexShader = compile vs_3_0 SprMake_ShadowVS(0);
         PixelShader  = compile ps_3_0 SprMake_ShadowPS(0);
@@ -830,9 +810,9 @@ technique ShadowTec < string MMDPass = "shadow"; bool UseToon = false; >
 
     pass DrawShadow1
     {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
+#if SPRMAKE_CONFIG_RENDERBACK != 0
         CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+#endif // SPRMAKE_CONFIG_RENDERBACK != 0
 
         VertexShader = compile vs_3_0 SprMake_ShadowVS(1);
         PixelShader  = compile ps_3_0 SprMake_ShadowPS(1);
@@ -840,9 +820,9 @@ technique ShadowTec < string MMDPass = "shadow"; bool UseToon = false; >
 
     pass DrawShadow2
     {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
+#if SPRMAKE_CONFIG_RENDERBACK != 0
         CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+#endif // SPRMAKE_CONFIG_RENDERBACK != 0
 
         VertexShader = compile vs_3_0 SprMake_ShadowVS(2);
         PixelShader  = compile ps_3_0 SprMake_ShadowPS(2);
@@ -869,60 +849,44 @@ struct VS_ZPLOT_OUTPUT
 //--------------------------------------
 // Vertex shader for zplot
 //--------------------------------------
-VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION, uniform int lightIndex)
+VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
 {
     VS_ZPLOT_OUTPUT Out = (VS_ZPLOT_OUTPUT)0;
 
-#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
-#if SPRMAKE_CONFIG_SHADOW > 1 && defined(MIKUMIKUMOVING)
-    if (SprMake_ShadowEnabled && LightEnables[lightIndex])
-#elif SPRMAKE_CONFIG_SHADOW > 1
-    if (SprMake_ShadowEnabled)
-#else // if defined(MIKUMIKUMOVING)
-    if (LightEnables[lightIndex])
-#endif
-    {
-#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
-
-        static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
+    static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
 
 #ifdef MIKUMIKUMOVING
-        // for MikuMikuMoving
+    // for MikuMikuMoving
 
-        float4 wpos =
-            SprMake_CalcWorldPosition(
-                Pos,
-                atlasInfo.LeftBottomPos,
-                atlasInfo.Size,
-                WorldMatrix);
-        Out.Pos = mul(wpos, LightWVPMatrices[lightIndex]);
+    float4 wpos =
+        SprMake_CalcWorldPosition(
+            Pos,
+            atlasInfo.LeftBottomPos,
+            atlasInfo.Size,
+            WorldMatrix);
+    Out.Pos = mul(wpos, LightWVPMatrices[0]);
 
-        Out.ShadowMapTex = Out.Pos;
-        Out.ShadowMapTex.y = -Out.ShadowMapTex.y;
-        Out.ShadowMapTex.z =
-            length(LightPositions[lightIndex] - wpos.xyz) / LightZFars[lightIndex];
+    Out.ShadowMapTex = Out.Pos;
+    Out.ShadowMapTex.y = -Out.Pos.y;
+    Out.ShadowMapTex.z = length(LightPositions[0] - wpos.xyz) / LightZFars[0];
 
 #else // MIKUMIKUMOVING
-        // for MikuMikuEffect
+    // for MikuMikuEffect
 
-        float4 bpos = SprMake_CalcPosition(Pos, atlasInfo.LeftBottomPos, atlasInfo.Size);
-        Out.Pos = mul(bpos, LightWVPMatrix);
+    float4 bpos = SprMake_CalcPosition(Pos, atlasInfo.LeftBottomPos, atlasInfo.Size);
+    Out.Pos = mul(bpos, LightWVPMatrix);
 
-        Out.ShadowMapTex = Out.Pos;
+    Out.ShadowMapTex = Out.Pos;
 
 #endif // MIKUMIKUMOVING
 
-        Out.Tex =
-            SprMake_CalcTexCoord(
-                float2(Pos.x, 1 - Pos.y),
-                atlasInfo.UVLeftTop,
-                atlasInfo.UVRightTop,
-                atlasInfo.UVRightBottom,
-                atlasInfo.UVLeftBottom);
-
-#if SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
-    }
-#endif // SPRMAKE_CONFIG_SHADOW > 1 || defined(MIKUMIKUMOVING)
+    Out.Tex =
+        SprMake_CalcTexCoord(
+            float2(Pos.x, 1 - Pos.y),
+            atlasInfo.UVLeftTop,
+            atlasInfo.UVRightTop,
+            atlasInfo.UVRightBottom,
+            atlasInfo.UVLeftBottom);
 
     return Out;
 }
@@ -930,21 +894,14 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION, uniform int lightIndex)
 //--------------------------------------
 // Pixel shader for zplot
 //--------------------------------------
-float4 SprMake_ZplotPS(
-    float2 Tex : TEXCOORD0,
-    float4 ShadowMapTex : TEXCOORD1,
-    uniform int lightIndex) : COLOR
+float4 SprMake_ZplotPS(float2 Tex : TEXCOORD0, float4 ShadowMapTex : TEXCOORD1) : COLOR
 {
 #ifdef MIKUMIKUMOVING
-    clip(-float(!LightEnables[lightIndex]));
+    clip(-float(!LightEnables[0]));
 #endif // MIKUMIKUMOVING
 
-#if SPRMAKE_CONFIG_SHADOW > 1
-    clip(-float(!SprMake_ShadowEnabled));
-#endif // SPRMAKE_CONFIG_SHADOW > 1
-
     float alpha = tex2D(ObjTexSampler, Tex).a * AccTrans;
-    clip(alpha - 0.001f);
+    clip(alpha - SPRMAKE_CONFIG_CLIP_SHADOW_ALPHA);
 
     return float4(ShadowMapTex.z / ShadowMapTex.w, 0, 0, 1);
 }
@@ -961,40 +918,15 @@ technique ZplotTec < string MMDPass = "zplot"; bool UseToon = false; >
 
     pass DrawZplot0
     {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
+#if SPRMAKE_CONFIG_RENDERBACK != 0
         CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
+#endif // SPRMAKE_CONFIG_RENDERBACK != 0
         AlphaBlendEnable = FALSE;
 
-        VertexShader = compile vs_3_0 SprMake_ZplotVS(0);
-        PixelShader  = compile ps_3_0 SprMake_ZplotPS(0);
+        VertexShader = compile vs_3_0 SprMake_ZplotVS();
+        PixelShader  = compile ps_3_0 SprMake_ZplotPS();
     }
 
-#ifdef MIKUMIKUMOVING
-
-    pass DrawZplot1
-    {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
-        CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
-        AlphaBlendEnable = FALSE;
-
-        VertexShader = compile vs_3_0 SprMake_ZplotVS(1);
-        PixelShader  = compile ps_3_0 SprMake_ZplotPS(1);
-    }
-
-    pass DrawZplot2
-    {
-#if SPRMAKE_CONFIG_RENDERBACK > 0
-        CullMode = NONE;
-#endif // SPRMAKE_CONFIG_RENDERBACK > 0
-        AlphaBlendEnable = FALSE;
-
-        VertexShader = compile vs_3_0 SprMake_ZplotVS(2);
-        PixelShader  = compile ps_3_0 SprMake_ZplotPS(2);
-    }
-
-#endif // MIKUMIKUMOVING
 #endif // SPRMAKE_CONFIG_SHADOW != 0
 }
 
