@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ruche.mmm.tools.spriteMaker
 {
     /// <summary>
-    /// ライトとセルフシャドウの有効設定を表す列挙。
+    /// ライトの有効設定を表す列挙。
     /// </summary>
     public enum LightSetting
     {

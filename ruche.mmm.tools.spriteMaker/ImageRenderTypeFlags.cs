@@ -19,7 +19,7 @@ namespace ruche.mmm.tools.spriteMaker
         CanRenderBack = 1 << 0,
 
         /// <summary>
-        /// ライトとセルフシャドウを有効にできることを示す。
+        /// ライトを有効にできることを示す。
         /// </summary>
         CanUseLight = 1 << 1,
 

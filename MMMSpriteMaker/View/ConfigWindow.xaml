@@ -113,6 +113,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -301,13 +302,179 @@
                     Grid.Row="1" Grid.Column="1" />
             </Grid>
         </Border>
-        
-        <!-- row 3-->
+
+        <!-- row 3 -->
+        <TextBlock
+            Text="{x:Static res:Resources.ConfigWindow_Material}"
+            Grid.Row="3" Grid.Column="0" />
+        <Border Grid.Row="3" Grid.Column="1">
+            <Grid>
+                <Grid.Resources>
+                    <Style
+                        x:Key="rgbaName"
+                        TargetType="TextBlock"
+                        BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="Margin" Value="4,4,0,4" />
+                    </Style>
+                    <Style
+                        x:Key="rgbaValue"
+                        TargetType="TextBox"
+                        BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="MinWidth" Value="40" />
+                    </Style>
+                    <c:RangedSingleStringConverter
+                        x:Key="colorScValueConverter"
+                        MinValue="0"
+                        MaxValue="1"
+                        MinDecimalPlaces="1" />
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- row 0 -->
+                <TextBlock
+                    Text="{x:Static res:Resources.ConfigWindow_MaterialFaceColor}"
+                    Grid.Row="0" Grid.Column="0" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_R}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="0" Grid.Column="1" />
+                <TextBox
+                    DataContext="{Binding FaceColorViewModel}"
+                    Text="{Binding ScR, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="0" Grid.Column="2">
+                </TextBox>
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_G}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="0" Grid.Column="3" />
+                <TextBox
+                    DataContext="{Binding FaceColorViewModel}"
+                    Text="{Binding ScG, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="0" Grid.Column="4" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_B}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="0" Grid.Column="5" />
+                <TextBox
+                    DataContext="{Binding FaceColorViewModel}"
+                    Text="{Binding ScB, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="0" Grid.Column="6" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_A}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="0" Grid.Column="7" />
+                <TextBox
+                    DataContext="{Binding FaceColorViewModel}"
+                    Text="{Binding ScA, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="0" Grid.Column="8" />
+
+                <!-- row 1 -->
+                <TextBlock
+                    Text="{x:Static res:Resources.ConfigWindow_MaterialEmissiveColor}"
+                    Grid.Row="1" Grid.Column="0" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_R}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="1" Grid.Column="1" />
+                <TextBox
+                    DataContext="{Binding EmissiveColorViewModel}"
+                    Text="{Binding ScR, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="1" Grid.Column="2" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_G}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="1" Grid.Column="3" />
+                <TextBox
+                    DataContext="{Binding EmissiveColorViewModel}"
+                    Text="{Binding ScG, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="1" Grid.Column="4" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_B}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="1" Grid.Column="5" />
+                <TextBox
+                    DataContext="{Binding EmissiveColorViewModel}"
+                    Text="{Binding ScB, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="1" Grid.Column="6" />
+
+                <!-- row 2 -->
+                <TextBlock
+                    Text="{x:Static res:Resources.ConfigWindow_MaterialSpecularColor}"
+                    Grid.Row="2" Grid.Column="0" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_R}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="2" Grid.Column="1" />
+                <TextBox
+                    DataContext="{Binding SpecularColorViewModel}"
+                    Text="{Binding ScR, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="2" Grid.Column="2" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_G}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="2" Grid.Column="3" />
+                <TextBox
+                    DataContext="{Binding SpecularColorViewModel}"
+                    Text="{Binding ScG, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="2" Grid.Column="4" />
+                <TextBlock
+                    Text="{x:Static res:Resources.Color_B}"
+                    Style="{StaticResource rgbaName}"
+                    Grid.Row="2" Grid.Column="5" />
+                <TextBox
+                    DataContext="{Binding SpecularColorViewModel}"
+                    Text="{Binding ScB, Converter={StaticResource colorScValueConverter}, ValidatesOnExceptions=True}"
+                    Style="{StaticResource rgbaValue}"
+                    Grid.Row="2" Grid.Column="6" />
+
+                <!-- row 3 -->
+                <TextBlock
+                    Text="{x:Static res:Resources.ConfigWindow_MaterialSpecularPower}"
+                    Grid.Row="3" Grid.Column="0" />
+                <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="8">
+                    <Binding Path="SpecularPower" ValidatesOnExceptions="True">
+                        <Binding.Converter>
+                            <c:RangedSingleStringConverter
+                                MinValue="{x:Static appvm:ConfigViewModel.MinSpecularPower}"
+                                MinDecimalPlaces="1" />
+                        </Binding.Converter>
+                    </Binding>
+                </TextBox>
+            </Grid>
+        </Border>
+
+        <!-- row 4 -->
         <StackPanel
             Orientation="Horizontal"
             HorizontalAlignment="Right"
             Margin="0,4,0,0"
-            Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
             <Button
                 Content="{x:Static res:Resources.ConfigWindow_Reset}"
                 Command="{Binding ResetCommand}" />

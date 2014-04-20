@@ -14,46 +14,106 @@ namespace MMMSpriteMaker.ViewModel
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public ConfigViewModel() : this(new EffectFileConfig())
+        public ConfigViewModel()
+            : this(new AccessoryFileConfig(), new EffectFileConfig())
         {
         }
 
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        /// <param name="config">エフェクトファイル設定。</param>
-        public ConfigViewModel(EffectFileConfig config)
+        /// <param name="accessoryFileConfig">アクセサリファイル設定。</param>
+        /// <param name="effectFileConfig">エフェクトファイル設定。</param>
+        public ConfigViewModel(
+            AccessoryFileConfig accessoryFileConfig,
+            EffectFileConfig effectFileConfig)
         {
-            if (config == null)
+            if (accessoryFileConfig == null)
             {
-                throw new ArgumentNullException("config");
+                throw new ArgumentNullException("accessoryFileConfig");
+            }
+            if (effectFileConfig == null)
+            {
+                throw new ArgumentNullException("effectFileConfig");
             }
 
-            // エフェクトファイル設定を設定
-            Config = config;
+            // ファイル設定を設定
+            AccessoryFileConfig = accessoryFileConfig;
+            EffectFileConfig = effectFileConfig;
+
+            // 色の ViewModel 作成
+            FaceColorViewModel = ColorViewModel.Bind(AccessoryFileConfig, "FaceColor");
+            EmissiveColorViewModel =
+                ColorViewModel.Bind(AccessoryFileConfig, "EmissiveColor");
+            SpecularColorViewModel =
+                ColorViewModel.Bind(AccessoryFileConfig, "SpecularColor");
 
             // コマンド作成
-            ResetCommand = new DelegateCommand(_ => Config.Reset());
+            ResetCommand =
+                new DelegateCommand(
+                    _ =>
+                    {
+                        AccessoryFileConfig.Reset();
+                        EffectFileConfig.Reset();
+                    });
 
-            // エフェクトファイル設定変更時の処理を登録
-            Config.PropertyChanged += Config_PropertyChanged;
+            // ファイル設定変更時の処理を登録
+            AccessoryFileConfig.PropertyChanged += Config_PropertyChanged;
+            EffectFileConfig.PropertyChanged += Config_PropertyChanged;
 
             // RenderType 関連プロパティ初期化
-            ChangeRenderTypeStatus(Config.RenderType);
+            ChangeRenderTypeStatus(EffectFileConfig.RenderType);
         }
+
+        /// <summary>
+        /// アクセサリファイル設定を取得する。
+        /// </summary>
+        public AccessoryFileConfig AccessoryFileConfig { get; private set; }
 
         /// <summary>
         /// エフェクトファイル設定を取得する。
         /// </summary>
-        public EffectFileConfig Config { get; private set; }
+        public EffectFileConfig EffectFileConfig { get; private set; }
+
+        /// <summary>
+        /// アクセサリの面の色の ViewModel を取得する。
+        /// </summary>
+        public ColorViewModel FaceColorViewModel { get; private set; }
+
+        /// <summary>
+        /// アクセサリの発散光色成分の ViewModel を取得する。
+        /// </summary>
+        public ColorViewModel EmissiveColorViewModel { get; private set; }
+
+        /// <summary>
+        /// アクセサリの鏡面反射光色成分の ViewModel を取得する。
+        /// </summary>
+        public ColorViewModel SpecularColorViewModel { get; private set; }
+
+        /// <summary>
+        /// アクセサリの鏡面反射強度の最小値を取得する。
+        /// </summary>
+        public static float MinSpecularPower
+        {
+            get { return AccessoryFileConfig.MinSpecularPower; }
+        }
+
+        /// <summary>
+        /// アクセサリの鏡面反射強度値を取得または設定する。
+        /// </summary>
+        public float SpecularPower
+        {
+            get { return AccessoryFileConfig.SpecularPower; }
+            set { AccessoryFileConfig.SpecularPower = value; }
+        }
 
         /// <summary>
         /// イメージの描画方法を取得または設定する。
         /// </summary>
         public ImageRenderType RenderType
         {
-            get { return Config.RenderType; }
-            set { Config.RenderType = value; }
+            get { return EffectFileConfig.RenderType; }
+            set { EffectFileConfig.RenderType = value; }
         }
 
         /// <summary>
@@ -78,8 +138,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public bool RenderingBack
         {
-            get { return Config.RenderingBack; }
-            set { Config.RenderingBack = value; }
+            get { return EffectFileConfig.RenderingBack; }
+            set { EffectFileConfig.RenderingBack = value; }
         }
 
         /// <summary>
@@ -104,8 +164,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public LightSetting LightSetting
         {
-            get { return Config.LightSetting; }
-            set { Config.LightSetting = value; }
+            get { return EffectFileConfig.LightSetting; }
+            set { EffectFileConfig.LightSetting = value; }
         }
 
         /// <summary>
@@ -138,8 +198,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public float PixelRatio
         {
-            get { return Config.PixelRatio; }
-            set { Config.PixelRatio = value; }
+            get { return EffectFileConfig.PixelRatio; }
+            set { EffectFileConfig.PixelRatio = value; }
         }
 
         /// <summary>
@@ -172,8 +232,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public float SpriteViewportWidth
         {
-            get { return Config.SpriteViewportWidth; }
-            set { Config.SpriteViewportWidth = value; }
+            get { return EffectFileConfig.SpriteViewportWidth; }
+            set { EffectFileConfig.SpriteViewportWidth = value; }
         }
 
         /// <summary>
@@ -206,8 +266,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public float SpriteZRange
         {
-            get { return Config.SpriteZRange; }
-            set { Config.SpriteZRange = value; }
+            get { return EffectFileConfig.SpriteZRange; }
+            set { EffectFileConfig.SpriteZRange = value; }
         }
 
         /// <summary>
@@ -215,8 +275,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public ImageBasePoint BasePoint
         {
-            get { return Config.BasePoint; }
-            set { Config.BasePoint = value; }
+            get { return EffectFileConfig.BasePoint; }
+            set { EffectFileConfig.BasePoint = value; }
         }
 
         /// <summary>
@@ -224,8 +284,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public ImageFlipSetting HorizontalFlipSetting
         {
-            get { return Config.HorizontalFlipSetting; }
-            set { Config.HorizontalFlipSetting = value; }
+            get { return EffectFileConfig.HorizontalFlipSetting; }
+            set { EffectFileConfig.HorizontalFlipSetting = value; }
         }
 
         /// <summary>
@@ -233,8 +293,8 @@ namespace MMMSpriteMaker.ViewModel
         /// </summary>
         public ImageFlipSetting VerticalFlipSetting
         {
-            get { return Config.VerticalFlipSetting; }
-            set { Config.VerticalFlipSetting = value; }
+            get { return EffectFileConfig.VerticalFlipSetting; }
+            set { EffectFileConfig.VerticalFlipSetting = value; }
         }
 
         /// <summary>
@@ -243,7 +303,7 @@ namespace MMMSpriteMaker.ViewModel
         public ICommand ResetCommand { get; private set; }
 
         /// <summary>
-        /// アプリケーション設定の変更時に呼び出される。
+        /// ファイル設定の変更時に呼び出される。
         /// </summary>
         private void Config_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -253,7 +313,7 @@ namespace MMMSpriteMaker.ViewModel
             // RenderType なら関連プロパティ変更
             if (e.PropertyName == "RenderType")
             {
-                ChangeRenderTypeStatus(Config.RenderType);
+                ChangeRenderTypeStatus(EffectFileConfig.RenderType);
             }
         }
 

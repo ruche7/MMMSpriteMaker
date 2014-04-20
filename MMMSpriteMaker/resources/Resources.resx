@@ -206,4 +206,31 @@ Please re-get this tool from an official web site etc.</value>
   <data name="AppIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\AppIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ConfigWindow_Material" xml:space="preserve">
+    <value>Material:</value>
+  </data>
+  <data name="ConfigWindow_MaterialEmissiveColor" xml:space="preserve">
+    <value>Emissive:</value>
+  </data>
+  <data name="ConfigWindow_MaterialFaceColor" xml:space="preserve">
+    <value>Face color:</value>
+  </data>
+  <data name="ConfigWindow_MaterialSpecularColor" xml:space="preserve">
+    <value>Specular:</value>
+  </data>
+  <data name="ConfigWindow_MaterialSpecularPower" xml:space="preserve">
+    <value>Specular power:</value>
+  </data>
+  <data name="Color_A" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="Color_B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Color_G" xml:space="preserve">
+    <value>G</value>
+  </data>
+  <data name="Color_R" xml:space="preserve">
+    <value>R</value>
+  </data>
 </root>

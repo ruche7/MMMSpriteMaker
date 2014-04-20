@@ -5,6 +5,9 @@
     <Setting Name="EffectFileConfig" Type="ruche.mmm.tools.spriteMaker.EffectFileConfig" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="AccessoryFileConfig" Type="ruche.mmm.tools.spriteMaker.AccessoryFileConfig" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
     <Setting Name="AutoCloseAtSucceeded" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>

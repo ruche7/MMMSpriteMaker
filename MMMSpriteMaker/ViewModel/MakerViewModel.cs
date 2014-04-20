@@ -22,16 +22,22 @@ namespace MMMSpriteMaker.ViewModel
         /// <summary>
         /// コンストラクタ。
         /// </summary>
+        /// <param name="accessoryFileConfig">アクセサリファイル設定。</param>
         /// <param name="effectFileConfig">エフェクトファイル設定。</param>
         /// <param name="textureAtlasLoader">テクスチャアトラスローダ。</param>
         /// <param name="textureAtlasFilePathes">
         /// テクスチャアトラスファイルパス列挙。
         /// </param>
         public MakerViewModel(
+            AccessoryFileConfig accessoryFileConfig,
             EffectFileConfig effectFileConfig,
             Func<string, TextureAtlas> textureAtlasLoader,
             IEnumerable<string> textureAtlasFilePathes)
         {
+            if (accessoryFileConfig == null)
+            {
+                throw new ArgumentNullException("accessoryFileConfig");
+            }
             if (effectFileConfig == null)
             {
                 throw new ArgumentNullException("effectFileConfig");
@@ -46,7 +52,8 @@ namespace MMMSpriteMaker.ViewModel
             }
 
             // 処理中に設定値が書き換わらないようにクローンを作成
-            var config = effectFileConfig.Clone();
+            var accConfig = accessoryFileConfig.Clone();
+            var effectConfig = effectFileConfig.Clone();
 
             // SpriteMaker コレクション作成
             Makers =
@@ -59,8 +66,9 @@ namespace MMMSpriteMaker.ViewModel
                             new SpriteMaker
                             {
                                 TextureAtlasLoader = textureAtlasLoader,
-                                TextureAtlasFilePath = p,
-                                EffectFileConfig = config,
+                                InputTextureAtlasPath = p,
+                                AccessoryFileConfig = accConfig,
+                                EffectFileConfig = effectConfig,
                             })
                     .ToList()
                     .AsReadOnly();
@@ -309,7 +317,7 @@ namespace MMMSpriteMaker.ViewModel
                 try
                 {
                     // 開始ログ追加
-                    var atlasFilePath = maker.GetTextureAtlasFilePath();
+                    var atlasFilePath = maker.GetInputTextureAtlasPath();
                     var baseDirPath = Path.GetDirectoryName(atlasFilePath);
                     var atlasFileName = Path.GetFileName(atlasFilePath);
                     AddLogLines(

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
 
 namespace ruche.mmm.tools.spriteMaker
 {
@@ -10,8 +7,7 @@ namespace ruche.mmm.tools.spriteMaker
     /// エフェクトファイル設定クラス。
     /// </summary>
     [Serializable]
-    public sealed class EffectFileConfig
-        : INotifyPropertyChanged, IEquatable<EffectFileConfig>, ICloneable
+    public sealed class EffectFileConfig : ConfigBase, ICloneable
     {
         /// <summary>
         /// コンストラクタ。
@@ -57,7 +53,7 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         /// <summary>
-        /// ライトとセルフシャドウの有効設定値を取得または設定する。
+        /// ライトの有効設定値を取得または設定する。
         /// </summary>
         /// <remarks>
         /// 実際に利用される設定値は GetLightSetting メソッドで取得すること。
@@ -70,9 +66,9 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         /// <summary>
-        /// 実際に利用されるライトとセルフシャドウの有効設定値を取得または設定する。
+        /// 実際に利用されるライトの有効設定値を取得または設定する。
         /// </summary>
-        /// <returns>ライトとセルフシャドウの有効設定値。</returns>
+        /// <returns>ライトの有効設定値。</returns>
         public LightSetting GetLightSetting()
         {
             return
@@ -202,177 +198,15 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         /// <summary>
-        /// すべての設定を既定値に戻す。
-        /// </summary>
-        public void Reset()
-        {
-            foreach (var info in GetConfigPropertyInfos())
-            {
-                var attrs =
-                    info.GetCustomAttributes(typeof(DefaultValueAttribute), false)
-                        as DefaultValueAttribute[];
-                this[info.Name] = attrs[0].Value;
-            }
-        }
-
-        /// <summary>
-        /// すべての設定名の列挙を取得する。
-        /// </summary>
-        /// <returns>すべての設定名の列挙。</returns>
-        public IEnumerable<string> GetConfigNames()
-        {
-            return GetConfigPropertyInfos().Select(info => info.Name);
-        }
-
-        /// <summary>
-        /// 指定した設定の既定値を取得する。
-        /// </summary>
-        /// <param name="name">設定名。</param>
-        /// <returns>既定値。</returns>
-        public dynamic GetDefaultValue(string name)
-        {
-            try
-            {
-                var info = this.GetType().GetProperty(name);
-                var attrs =
-                    info.GetCustomAttributes(typeof(DefaultValueAttribute), false)
-                        as DefaultValueAttribute[];
-                return attrs[0].Value;
-            }
-            catch
-            {
-                throw new ArgumentException("Invalid config name.", "name");
-            }
-        }
-
-        /// <summary>
         /// 自身の設定値で初期化されたクローンを作成する。
         /// </summary>
         /// <returns>自身の設定値で初期化されたクローン。</returns>
         /// <remarks>
-        /// 設定値のみが複製され、イベントは複製されない。
+        /// 設定値のみがコピーされる。イベントはコピーされない。
         /// </remarks>
         public EffectFileConfig Clone()
         {
-            return
-                new EffectFileConfig
-                {
-                    Source =
-                        new Dictionary<string, dynamic>(
-                            this.Source,
-                            this.Source.Comparer)
-                };
-        }
-
-        /// <summary>
-        /// 別のエフェクトファイル設定とすべての設定値が等価であるか否かを取得する。
-        /// </summary>
-        /// <param name="other">比較対象。</param>
-        /// <returns>
-        /// すべての設定値が等価であるならば true 。そうでなければ false 。
-        /// </returns>
-        /// <remarks>
-        /// 設定値のみが比較対象であり、イベントやその他のプロパティは比較されない。
-        /// </remarks>
-        public bool Equals(EffectFileConfig other)
-        {
-            if (
-                object.ReferenceEquals(other, null) ||
-                Source.Count != other.Source.Count)
-            {
-                return false;
-            }
-
-            return
-                Source.All(
-                    kv =>
-                    {
-                        dynamic value;
-                        return
-                            other.Source.TryGetValue(kv.Key, out value) &&
-                            kv.Value.Equals(value);
-                    });
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as EffectFileConfig);
-        }
-
-        public override int GetHashCode()
-        {
-            return
-                (int)RenderType ^
-                (RenderingBack ? -1 : 0) ^
-                ((int)LightSetting * 8) ^
-                PixelRatio.GetHashCode() ^
-                SpriteViewportWidth.GetHashCode() ^
-                SpriteZRange.GetHashCode() ^
-                ((int)BasePoint * 16) ^
-                ((int)HorizontalFlipSetting * 32) ^
-                ((int)VerticalFlipSetting * 64);
-        }
-
-        /// <summary>
-        /// 設定値が変更された時に呼び出されるイベント。
-        /// </summary>
-        [field: NonSerialized]
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 設定値の保持先となるディクショナリを取得または設定する。
-        /// </summary>
-        private Dictionary<string, dynamic> Source
-        {
-            get { return source; }
-            set { source = value ?? new Dictionary<string, dynamic>(); }
-        }
-        private Dictionary<string, dynamic> source = new Dictionary<string, dynamic>();
-
-        /// <summary>
-        /// 設定値を取得または設定するインデクサ。
-        /// </summary>
-        /// <param name="name">設定名。</param>
-        /// <returns>設定値。</returns>
-        private dynamic this[string name]
-        {
-            get
-            {
-                dynamic value;
-                return Source.TryGetValue(name, out value) ? value : null;
-            }
-            set
-            {
-                if (!Source.ContainsKey(name) || !Source[name].Equals(value))
-                {
-                    Source[name] = value;
-                    NotifyPropertyChanged(name);
-                }
-            }
-        }
-
-        /// <summary>
-        /// すべての設定のプロパティ情報列挙を取得する。
-        /// </summary>
-        /// <returns>すべての設定のプロパティ情報列挙。</returns>
-        private IEnumerable<PropertyInfo> GetConfigPropertyInfos()
-        {
-            return
-                from info in this.GetType().GetProperties()
-                where info.IsDefined(typeof(DefaultValueAttribute), false)
-                select info;
-        }
-
-        /// <summary>
-        /// 設定値の変更を通知する。
-        /// </summary>
-        /// <param name="name">設定名。</param>
-        private void NotifyPropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
+            return CloneCore<EffectFileConfig>();
         }
 
         #region ICloneable 明示的実装

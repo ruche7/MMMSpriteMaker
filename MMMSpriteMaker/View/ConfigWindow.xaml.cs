@@ -27,9 +27,15 @@ namespace MMMSpriteMaker.View
             // ビューモデル設定
             DataContext = viewModel;
 
-            // エフェクトファイル設定を保持しておく
-            EffectFileConfig = viewModel.Config;
+            // ファイル設定を保持しておく
+            AccessoryFileConfig = viewModel.AccessoryFileConfig;
+            EffectFileConfig = viewModel.EffectFileConfig;
         }
+
+        /// <summary>
+        /// アクセサリファイル設定を取得または設定する。
+        /// </summary>
+        private AccessoryFileConfig AccessoryFileConfig { get; set; }
 
         /// <summary>
         /// エフェクトファイル設定を取得または設定する。
@@ -77,7 +83,11 @@ namespace MMMSpriteMaker.View
                     // 作成ウィンドウ起動
                     var makerWindow =
                         new View.MakerWindow(
-                            new ViewModel.MakerViewModel(EffectFileConfig, loader, items));
+                            new ViewModel.MakerViewModel(
+                                AccessoryFileConfig,
+                                EffectFileConfig,
+                                loader,
+                                items));
                     makerWindow.Show();
                 }
                 catch (Exception ex)

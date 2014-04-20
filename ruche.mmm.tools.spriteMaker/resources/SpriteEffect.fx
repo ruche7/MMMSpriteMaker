@@ -728,40 +728,36 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
 {
     VS_SHADOW_OUTPUT Out = (VS_SHADOW_OUTPUT)0;
 
+    static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
+
 #ifdef MIKUMIKUMOVING
-    if (LightEnables[lightIndex])
+    if (!LightEnables[lightIndex])
     {
-#endif // MIKUMIKUMOVING
+        return Out;
+    }
 
-        static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
-
-#ifdef MIKUMIKUMOVING
-        float3 lightDir = LightDirections[lightIndex];
+    float3 lightDir = LightDirections[lightIndex];
 #else
-        uniform float3 lightDir = LightDirection;
+    uniform float3 lightDir = LightDirection;
 #endif
 
-        float4 wpos =
-            SprMake_CalcWorldPosition(
-                Pos,
-                atlasInfo.LeftBottomPos,
-                atlasInfo.Size,
-                WorldMatrix);
-        wpos.xyz -= lightDir * ((lightDir.y == 0) ? -999999.9f : (wpos.y / lightDir.y));
-        wpos.y += 0.02f;
-        Out.Pos = SprMake_CalcVertexPosition(wpos, ViewMatrix, ProjMatrix);
+    float4 wpos =
+        SprMake_CalcWorldPosition(
+            Pos,
+            atlasInfo.LeftBottomPos,
+            atlasInfo.Size,
+            WorldMatrix);
+    wpos.xyz -= lightDir * ((lightDir.y == 0) ? -999999.9f : (wpos.y / lightDir.y));
+    wpos.y += 0.02f;
+    Out.Pos = SprMake_CalcVertexPosition(wpos, ViewMatrix, ProjMatrix);
 
-        Out.Tex =
-            SprMake_CalcTexCoord(
-                float2(Pos.x, 1 - Pos.y),
-                atlasInfo.UVLeftTop,
-                atlasInfo.UVRightTop,
-                atlasInfo.UVRightBottom,
-                atlasInfo.UVLeftBottom);
-
-#ifdef MIKUMIKUMOVING
-    }
-#endif // MIKUMIKUMOVING
+    Out.Tex =
+        SprMake_CalcTexCoord(
+            float2(Pos.x, 1 - Pos.y),
+            atlasInfo.UVLeftTop,
+            atlasInfo.UVRightTop,
+            atlasInfo.UVRightBottom,
+            atlasInfo.UVLeftBottom);
 
     return Out;
 }
@@ -857,6 +853,11 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
 
 #ifdef MIKUMIKUMOVING
     // for MikuMikuMoving
+
+    if (!LightEnables[0])
+    {
+        return Out;
+    }
 
     float4 wpos =
         SprMake_CalcWorldPosition(

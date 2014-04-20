@@ -32,6 +32,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -44,7 +45,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessoryFileConfig.cs" />
     <Compile Include="AccessoryFileMaker.cs" />
+    <Compile Include="ConfigBase.cs" />
     <Compile Include="EffectFileConfig.cs" />
     <Compile Include="EffectFileMaker.cs" />
     <Compile Include="ImageBasePoint.cs" />

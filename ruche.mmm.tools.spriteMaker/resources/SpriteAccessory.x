@@ -146,10 +146,10 @@ Mesh {
   1;
   0;
   Material {
-   0.800000;0.800000;0.800000;1.000000;;
-   1.000000;
-   0.300000;0.300000;0.300000;;
-   0.300000;0.300000;0.300000;;
+   [[MaterialFaceColor]];
+   [[MaterialSpecularPower]];
+   [[MaterialSpecularColor]];
+   [[MaterialEmissiveColor]];
    TextureFilename {
     "[[TextureFileName]]";
    }

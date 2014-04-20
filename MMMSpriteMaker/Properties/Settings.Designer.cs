@@ -36,6 +36,17 @@ namespace MMMSpriteMaker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::ruche.mmm.tools.spriteMaker.AccessoryFileConfig AccessoryFileConfig {
+            get {
+                return ((global::ruche.mmm.tools.spriteMaker.AccessoryFileConfig)(this["AccessoryFileConfig"]));
+            }
+            set {
+                this["AccessoryFileConfig"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AutoCloseAtSucceeded {
             get {

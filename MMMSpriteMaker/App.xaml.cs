@@ -30,6 +30,15 @@ namespace MMMSpriteMaker
         public static Settings Settings { get; set; }
 
         /// <summary>
+        /// アクセサリファイル設定を取得または設定する。
+        /// </summary>
+        private static AccessoryFileConfig AccessoryFileConfig
+        {
+            get { return Settings.AccessoryFileConfig; }
+            set { Settings.AccessoryFileConfig = value; }
+        }
+
+        /// <summary>
         /// エフェクトファイル設定を取得または設定する。
         /// </summary>
         private static EffectFileConfig EffectFileConfig
@@ -98,7 +107,12 @@ namespace MMMSpriteMaker
 
                 bool needSave = false;
 
-                // エフェクトファイル設定が null ならば初期化
+                // ファイル設定が null ならば初期化
+                if (AccessoryFileConfig == null)
+                {
+                    AccessoryFileConfig = new AccessoryFileConfig();
+                    needSave = true;
+                }
                 if (EffectFileConfig == null)
                 {
                     EffectFileConfig = new EffectFileConfig();
@@ -117,12 +131,13 @@ namespace MMMSpriteMaker
             }
 
             // 設定値が変更されたら即保存するようにする
-            Settings.EffectFileConfig.PropertyChanged += OnSettingsPropertyChanged;
+            AccessoryFileConfig.PropertyChanged += OnSettingsPropertyChanged;
+            EffectFileConfig.PropertyChanged += OnSettingsPropertyChanged;
             Settings.PropertyChanged += OnSettingsPropertyChanged;
         }
 
         /// <summary>
-        /// Settings および Settings.EffectFileConfig の内容が変更された時に呼び出される。
+        /// アプリケーション設定が変更された時に呼び出される。
         /// </summary>
         private void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -167,7 +182,11 @@ namespace MMMSpriteMaker
                 // 作成ウィンドウ起動
                 var makerWindow =
                     new View.MakerWindow(
-                        new ViewModel.MakerViewModel(EffectFileConfig, loader, args));
+                        new ViewModel.MakerViewModel(
+                            AccessoryFileConfig,
+                            EffectFileConfig,
+                            loader,
+                            args));
                 makerWindow.Show();
             }
             catch (Exception ex)
@@ -205,7 +224,8 @@ namespace MMMSpriteMaker
 
             // 設定ウィンドウ起動
             var configWindow =
-                new View.ConfigWindow(new ViewModel.ConfigViewModel(EffectFileConfig));
+                new View.ConfigWindow(
+                    new ViewModel.ConfigViewModel(AccessoryFileConfig, EffectFileConfig));
             configWindow.Show();
         }
 
@@ -216,7 +236,8 @@ namespace MMMSpriteMaker
         {
             // 念のためイベントを破棄
             Settings.PropertyChanged -= OnSettingsPropertyChanged;
-            Settings.EffectFileConfig.PropertyChanged -= OnSettingsPropertyChanged;
+            EffectFileConfig.PropertyChanged -= OnSettingsPropertyChanged;
+            AccessoryFileConfig.PropertyChanged -= OnSettingsPropertyChanged;
 
             // ミューテクス破棄
             if (mutexForWindow != null)

@@ -71,6 +71,42 @@ namespace MMMSpriteMaker.resources {
         }
         
         /// <summary>
+        ///   A に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Color_A {
+            get {
+                return ResourceManager.GetString("Color_A", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   B に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Color_B {
+            get {
+                return ResourceManager.GetString("Color_B", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   G に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Color_G {
+            get {
+                return ResourceManager.GetString("Color_G", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   R に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Color_R {
+            get {
+                return ResourceManager.GetString("Color_R", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Base point: に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ConfigWindow_BasePoint {
@@ -130,6 +166,51 @@ namespace MMMSpriteMaker.resources {
         public static string ConfigWindow_LightSetting {
             get {
                 return ResourceManager.GetString("ConfigWindow_LightSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Material: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ConfigWindow_Material {
+            get {
+                return ResourceManager.GetString("ConfigWindow_Material", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Emissive: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ConfigWindow_MaterialEmissiveColor {
+            get {
+                return ResourceManager.GetString("ConfigWindow_MaterialEmissiveColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Face color: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ConfigWindow_MaterialFaceColor {
+            get {
+                return ResourceManager.GetString("ConfigWindow_MaterialFaceColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Specular: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ConfigWindow_MaterialSpecularColor {
+            get {
+                return ResourceManager.GetString("ConfigWindow_MaterialSpecularColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Specular power: に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ConfigWindow_MaterialSpecularPower {
+            get {
+                return ResourceManager.GetString("ConfigWindow_MaterialSpecularPower", resourceCulture);
             }
         }
         

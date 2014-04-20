@@ -14,16 +14,6 @@ namespace ruche.mmm.tools.spriteMaker
     public class EffectFileMaker
     {
         /// <summary>
-        /// エフェクトファイル上で float 値を表す文字列を作成する。
-        /// </summary>
-        /// <param name="value">float 値。</param>
-        /// <returns>float 値を表す文字列。</returns>
-        private static string MakeFloatString(float value)
-        {
-            return string.Format("{0:0.0########}f", value);
-        }
-
-        /// <summary>
         /// コンストラクタ。
         /// </summary>
         public EffectFileMaker()
@@ -32,21 +22,26 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         /// <summary>
-        /// テクスチャアトラスを取得または設定する。
-        /// </summary>
-        public TextureAtlas TextureAtlas { get; set; }
-
-        /// <summary>
         /// エフェクトファイル設定を取得または設定する。
         /// </summary>
         public EffectFileConfig Config { get; set; }
+
+        /// <summary>
+        /// テクスチャアトラスを取得または設定する。
+        /// </summary>
+        public TextureAtlas TextureAtlas { get; set; }
 
         /// <summary>
         /// エフェクトファイルを作成する。
         /// </summary>
         /// <param name="filePath">ファイルパス。</param>
         /// <remarks>
-        /// 事前に TextureAtlas および Config に有効な値を設定しておく必要がある。
+        /// 事前に下記のプロパティに有効な値を設定しておく必要がある。
+        /// 
+        /// <list type="bullet">
+        /// <item><description>Config</description></item>
+        /// <item><description>TextureAtlas</description></item>
+        /// </list>
         /// </remarks>
         public void Make(string filePath)
         {
@@ -54,13 +49,13 @@ namespace ruche.mmm.tools.spriteMaker
             {
                 throw new ArgumentException("Invalid file path.", "filePath");
             }
-            if (TextureAtlas == null)
-            {
-                throw new InvalidOperationException("TextureAtlas is null.");
-            }
             if (Config == null)
             {
                 throw new InvalidOperationException("Config is null.");
+            }
+            if (TextureAtlas == null)
+            {
+                throw new InvalidOperationException("TextureAtlas is null.");
             }
 
             // 雛形文字列取得
@@ -74,6 +69,16 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         #region 文字列置換用プロパティ
+
+        /// <summary>
+        /// エフェクトファイル上で float 値を表す文字列を作成する。
+        /// </summary>
+        /// <param name="value">float 値。</param>
+        /// <returns>float 値を表す文字列。</returns>
+        private static string MakeFloatString(float value)
+        {
+            return string.Format("{0:0.0########}f", value);
+        }
 
         [TemplateReplaceId]
         private int ConfigRenderType
