@@ -483,6 +483,50 @@ float2 SprMake_CalcTexCoord(
             Tex.y);
 }
 
+#ifdef MIKUMIKUMOVING
+
+// Active light info
+struct SPRMAKE_LIGHT_INFO
+{
+    float4x4 WVPMatrix;
+    float3 Pos;
+    float ZFar;
+};
+
+//--------------------------------------
+// Check self-shadow
+//--------------------------------------
+bool SprMake_IsSelfShadowEnabled()
+{
+    int count = int(LightEnables[0]) + int(LightEnables[1]) + int(LightEnables[2]);
+
+    // multi-lighting is not supported
+    return (count == 1);
+}
+
+//--------------------------------------
+// Get active light info
+//--------------------------------------
+SPRMAKE_LIGHT_INFO SprMake_GetActiveLightInfo()
+{
+    SPRMAKE_LIGHT_INFO Out = (SPRMAKE_LIGHT_INFO)0;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        if (LightEnables[i])
+        {
+            Out.WVPMatrix = LightWVPMatrices[i];
+            Out.Pos = LightPositions[i];
+            Out.ZFar = LightZFars[i];
+            break;
+        }
+    }
+
+    return Out;
+}
+
+#endif // MIKUMIKUMOVING
+
 //----------------------------------------------------------
 // Shader for object
 //----------------------------------------------------------
@@ -854,10 +898,14 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
 #ifdef MIKUMIKUMOVING
     // for MikuMikuMoving
 
-    if (!LightEnables[0])
+    static const bool selfShadowDisabled = !SprMake_IsSelfShadowEnabled();
+
+    if (selfShadowDisabled)
     {
         return Out;
     }
+
+    static const SPRMAKE_LIGHT_INFO lightInfo = SprMake_GetActiveLightInfo();
 
     float4 wpos =
         SprMake_CalcWorldPosition(
@@ -865,11 +913,11 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
             atlasInfo.LeftBottomPos,
             atlasInfo.Size,
             WorldMatrix);
-    Out.Pos = mul(wpos, LightWVPMatrices[0]);
+    Out.Pos = mul(wpos, lightInfo.WVPMatrix);
 
     Out.ShadowMapTex = Out.Pos;
     Out.ShadowMapTex.y = -Out.Pos.y;
-    Out.ShadowMapTex.z = length(LightPositions[0] - wpos.xyz) / LightZFars[0];
+    Out.ShadowMapTex.z = length(lightInfo.Pos - wpos.xyz) / lightInfo.ZFar;
 
 #else // MIKUMIKUMOVING
     // for MikuMikuEffect
@@ -898,7 +946,8 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
 float4 SprMake_ZplotPS(float2 Tex : TEXCOORD0, float4 ShadowMapTex : TEXCOORD1) : COLOR
 {
 #ifdef MIKUMIKUMOVING
-    clip(-float(!LightEnables[0]));
+    static const bool selfShadowDisabled = !SprMake_IsSelfShadowEnabled();
+    clip(-float(selfShadowDisabled));
 #endif // MIKUMIKUMOVING
 
     float alpha = tex2D(ObjTexSampler, Tex).a * AccTrans;
