@@ -6,7 +6,8 @@ using System.Windows;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("MMMSpriteMaker")]
-[assembly: AssemblyDescription("The sprite accessory and effect maker for MikuMikuMoving.")]
+[assembly: AssemblyDescription(
+    "The sprite accessory and effect maker for MikuMikuMoving.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ruche-home")]
 [assembly: AssemblyProduct("MMMSpriteMaker")]
@@ -49,4 +50,4 @@ using System.Windows;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.*")]

@@ -152,20 +152,48 @@ namespace ruche.mmm.tools.spriteMaker
             get { return (int)TextureAtlas.ImageSize.Height; }
         }
 
+        private string MakeSizeString(
+            Func<TextureAtlasFrame, double> xSelector,
+            Func<TextureAtlasFrame, double> ySelector)
+        {
+            return
+                string.Join(
+                    Environment.NewLine,
+                    from f in TextureAtlas.Frames
+                    select
+                        "        float2(" +
+                        MakeFloatString((float)xSelector(f)) + ", " +
+                        MakeFloatString((float)ySelector(f)) +
+                        ") * SprMake_AtlasSizeMul,");
+        }
+
         [TemplateReplaceId]
         private string AtlasSizes
+        {
+            get { return MakeSizeString(f => f.Size.Width, f => f.Size.Height); }
+        }
+
+        [TemplateReplaceId]
+        private string AtlasOriginalSizes
         {
             get
             {
                 return
-                    string.Join(
-                        Environment.NewLine,
-                        from f in TextureAtlas.Frames
-                        select
-                            "        float2(" +
-                            MakeFloatString((float)f.Size.Width) + ", " +
-                            MakeFloatString((float)f.Size.Height) +
-                            ") * SprMake_AtlasSizeMul,");
+                    MakeSizeString(
+                        f => f.OriginalSize.Width,
+                        f => f.OriginalSize.Height);
+            }
+        }
+
+        [TemplateReplaceId]
+        private string AtlasLeftBottomTrimSizes
+        {
+            get
+            {
+                return
+                    MakeSizeString(
+                        f => f.LeftTopTrimPoint.X,
+                        f => f.OriginalSize.Height - (f.LeftTopTrimPoint.Y + f.Size.Height));
             }
         }
 
@@ -219,6 +247,8 @@ namespace ruche.mmm.tools.spriteMaker
                     "    Out.UVRightTop = SprMake_AtlasUVRightTops[" + index + "];",
                     "    Out.UVRightBottom = SprMake_AtlasUVRightBottoms[" + index + "];",
                     "    Out.UVLeftBottom = SprMake_AtlasUVLeftBottoms[" + index + "];",
+                    "    originalSize = SprMake_AtlasOriginalSizes[" + index + "];",
+                    "    leftBottomTrimSize = SprMake_AtlasLeftBottomTrimSizes[" + index + "];",
                     "}");
         }
 

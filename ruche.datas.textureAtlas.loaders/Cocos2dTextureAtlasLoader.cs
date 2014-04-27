@@ -198,12 +198,17 @@ namespace ruche.datas.textureAtlas.loaders
 
                 var frames =
                     from kv in (dict["frames"] as Dictionary<string, dynamic>)
-                    let r = ParseRectString(kv.Value["frame"] as string)
+                    let frameRect = ParseRectString(kv.Value["frame"] as string)
+                    let rotated = (bool)kv.Value["rotated"]
+                    let srcSize = ParseSizeString(kv.Value["sourceSize"] as string)
+                    let trimRect = ParseRectString(kv.Value["sourceColorRect"] as string)
                     select
                         TextureAtlasFrame.Create(
-                            r.Size,
-                            r.Location,
-                            (bool)kv.Value["rotated"]);
+                            frameRect.Size,
+                            frameRect.Location,
+                            rotated,
+                            srcSize,
+                            trimRect.Location);
 
                 return new TextureAtlas(imgFileName, imgSize, frames);
             }

@@ -93,13 +93,13 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// TextureAtlasPluginLoader インスタンスを作成する。
         /// </summary>
+        /// <param name="pluginDirectoryPathes">
+        /// プラグインファイルの検索ディレクトリ一覧。
+        /// </param>
         /// <returns>
         /// TextureAtlasPluginLoader インスタンス。
         /// プラグインが1つも見つからなかった場合は null 。
         /// </returns>
-        /// <param name="pluginDirectoryPathes">
-        /// プラグインファイルの検索ディレクトリ一覧。
-        /// </param>
         public static TextureAtlasPluginLoader Create(
             params string[] pluginDirectoryPathes)
         {
@@ -109,14 +109,14 @@ namespace ruche.mmm.tools.spriteMaker
         /// <summary>
         /// TextureAtlasPluginLoader インスタンスを作成する。
         /// </summary>
-        /// <returns>
-        /// TextureAtlasPluginLoader インスタンス。
-        /// プラグインが1つも見つからなかった場合は null 。
-        /// </returns>
         /// <param name="pluginDirectoryPathes">
         /// プラグインファイルの検索ディレクトリ列挙。
         /// null を渡した場合は実行ファイルと同じ位置にあるプラグインファイルを検索する。
         /// </param>
+        /// <returns>
+        /// TextureAtlasPluginLoader インスタンス。
+        /// プラグインが1つも見つからなかった場合は null 。
+        /// </returns>
         public static TextureAtlasPluginLoader Create(
             IEnumerable<string> pluginDirectoryPathes)
         {
@@ -161,6 +161,75 @@ namespace ruche.mmm.tools.spriteMaker
 
             // インスタンス作成
             return new TextureAtlasPluginLoader(infos);
+        }
+
+        /// <summary>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲートを作成する。
+        /// </summary>
+        /// <returns>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲート。
+        /// プラグインが1つも見つからなかった場合は null 。
+        /// </returns>
+        /// <remarks>
+        /// 実行ファイルと同じ位置にあるプラグインファイルを検索する。
+        /// </remarks>
+        public static Func<string, TextureAtlas> CreateDelegate()
+        {
+            var loader = Create();
+            return (loader == null) ? null : CreateDelegate(loader);
+        }
+
+        /// <summary>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲートを作成する。
+        /// </summary>
+        /// <param name="pluginDirectoryPathes">
+        /// プラグインファイルの検索ディレクトリ一覧。
+        /// </param>
+        /// <returns>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲート。
+        /// プラグインが1つも見つからなかった場合は null 。
+        /// </returns>
+        public static Func<string, TextureAtlas> CreateDelegate(
+            params string[] pluginDirectoryPathes)
+        {
+            var loader = Create(pluginDirectoryPathes);
+            return (loader == null) ? null : CreateDelegate(loader);
+        }
+
+        /// <summary>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲートを作成する。
+        /// </summary>
+        /// <param name="pluginDirectoryPathes">
+        /// プラグインファイルの検索ディレクトリ列挙。
+        /// null を渡した場合は実行ファイルと同じ位置にあるプラグインファイルを検索する。
+        /// </param>
+        /// <returns>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲート。
+        /// プラグインが1つも見つからなかった場合は null 。
+        /// </returns>
+        public static Func<string, TextureAtlas> CreateDelegate(
+            IEnumerable<string> pluginDirectoryPathes)
+        {
+            var loader = Create(pluginDirectoryPathes);
+            return (loader == null) ? null : CreateDelegate(loader);
+        }
+
+        /// <summary>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲートを作成する。
+        /// </summary>
+        /// <param name="loader">TextureAtlasPluginLoader インスタンス。</param>
+        /// <returns>
+        /// TextureAtlasPluginLoader インスタンスを利用するローダデリゲート。
+        /// </returns>
+        public static Func<string, TextureAtlas> CreateDelegate(
+            TextureAtlasPluginLoader loader)
+        {
+            if (loader == null)
+            {
+                throw new ArgumentNullException("loader");
+            }
+
+            return loader.Load;
         }
 
         /// <summary>

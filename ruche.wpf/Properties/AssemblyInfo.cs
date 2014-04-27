@@ -6,7 +6,7 @@ using System.Windows.Markup;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("ruche.wpf")]
-[assembly: AssemblyDescription("The class library for WPF/XAML.")]
+[assembly: AssemblyDescription("The library of utility classes for WPF/XAML.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ruche-home")]
 [assembly: AssemblyProduct("ruche.wpf")]
@@ -32,7 +32,7 @@ using System.Windows.Markup;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.*")]
 
 // XML名前空間
 [assembly: XmlnsDefinition("http://ruche-home.net/xaml/wpf", "ruche.wpf")]

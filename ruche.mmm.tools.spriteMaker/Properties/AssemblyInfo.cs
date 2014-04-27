@@ -7,7 +7,7 @@ using System.Windows.Markup;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("ruche.mmm.tools.spriteMaker")]
-[assembly: AssemblyDescription("The sprite accessory and effect library for MikuMikuMoving.")]
+[assembly: AssemblyDescription("The library of utility classes for MikuMikuMoving.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ruche-home")]
 [assembly: AssemblyProduct("ruche.mmm.tools.spriteMaker")]
@@ -33,7 +33,7 @@ using System.Windows.Markup;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.*")]
 
 // XML名前空間
 [assembly: XmlnsDefinition(

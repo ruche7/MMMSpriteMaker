@@ -18,7 +18,7 @@ namespace MMMSpriteMaker
         /// <returns>テクスチャアトラスローダ。</returns>
         public static Func<string, TextureAtlas> Create()
         {
-            if (InnerLoader == null)
+            if (Loader == null)
             {
                 // プラグイン読み取り元パス
                 // 1. 実行ファイルと同じ場所にある plugins ディレクトリ
@@ -27,22 +27,21 @@ namespace MMMSpriteMaker
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var pluginsDir = Path.Combine(exeDir, "plugins");
 
-                // ローダ作成
-                InnerLoader = TextureAtlasPluginLoader.Create(pluginsDir, exeDir);
-                if (InnerLoader == null)
+                // ローダデリゲート作成
+                Loader = TextureAtlasPluginLoader.CreateDelegate(pluginsDir, exeDir);
+                if (Loader == null)
                 {
                     throw new Exception(
                         Resources.TextureAtlasLoaderFactory_PluginNotFound);
                 }
             }
 
-            // デリゲートにして返す
-            return (path => InnerLoader.Load(path));
+            return Loader;
         }
 
         /// <summary>
-        /// 実処理を行うローダインスタンスを取得または設定する。
+        /// ローダデリゲートを取得または設定する。
         /// </summary>
-        private static TextureAtlasPluginLoader InnerLoader { get; set; }
+        private static Func<string, TextureAtlas> Loader { get; set; }
     }
 }

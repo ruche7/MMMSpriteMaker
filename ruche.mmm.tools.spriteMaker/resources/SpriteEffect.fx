@@ -30,7 +30,7 @@
 // Size per pixel (default = 0.1f)
 #define SPRMAKE_CONFIG_PIXELRATIO [[ConfigPixelRatio]]
 
-// Sprite view width (default = 45.0f)
+// Sprite view width (default = 64.0f)
 #define SPRMAKE_CONFIG_SPRITE_VIEWWIDTH [[ConfigSpriteViewportWidth]]
 
 // Sprite z-order range (default = 10.0f)
@@ -106,6 +106,16 @@ static float2 SprMake_AtlasSizes[SPRMAKE_ATLAS_COUNT] =
 [[AtlasSizes]]
     };
 
+static float2 SprMake_AtlasOriginalSizes[SPRMAKE_ATLAS_COUNT] =
+    {
+[[AtlasOriginalSizes]]
+    };
+
+static float2 SprMake_AtlasLeftBottomTrimSizes[SPRMAKE_ATLAS_COUNT] =
+    {
+[[AtlasLeftBottomTrimSizes]]
+    };
+
 static float2 SprMake_AtlasLeftBottomPosMul =
     {
         -0.5f * fmod(SPRMAKE_CONFIG_BASEPOINT, 3),
@@ -157,26 +167,30 @@ static float3x3 BillboardMatrix =
 #ifdef SPRMAKE_RENDER_SPRITE
 
 float2 ViewportSize : VIEWPORTPIXELSIZE;
+
 #ifdef SPRMAKE_RENDER_DOTBYDOT
+
 static float4x4 ProjMatrix =
     {
-        2.0f / ViewportSize.x, 0, 0,                                   0,
-        0, 2.0f / ViewportSize.y, 0,                                   0,
-        0,                     0, 1.0f / SPRMAKE_CONFIG_SPRITE_ZRANGE, 0,
-        0,                     0, 0,                                   1,
+        2.0f / ViewportSize.x, 0,               0, 0,
+        0, 2.0f / ViewportSize.y,               0, 0,
+        0, 0, 1.0f / SPRMAKE_CONFIG_SPRITE_ZRANGE, 0,
+        0,                     0,               0, 1,
     };
+
 #else // SPRMAKE_RENDER_DOTBYDOT
+
 static float ProjMatrix11 = 2.0f / SPRMAKE_CONFIG_SPRITE_VIEWWIDTH;
 static float ViewportRatio = ViewportSize.x / ViewportSize.y;
 static float4x4 ProjMatrix =
     {
-        ProjMatrix11,                 0, 0,                                   0,
-        0, ProjMatrix11 * ViewportRatio, 0,                                   0,
-        0,                            0, 1.0f / SPRMAKE_CONFIG_SPRITE_ZRANGE, 0,
-        0,                            0, 0,                                   1,
+        ProjMatrix11,                 0,        0, 0,
+        0, ProjMatrix11 * ViewportRatio,        0, 0,
+        0, 0, 1.0f / SPRMAKE_CONFIG_SPRITE_ZRANGE, 0,
+        0,                            0,        0, 1,
     };
-#endif // SPRMAKE_RENDER_DOTBYDOT
 
+#endif // SPRMAKE_RENDER_DOTBYDOT
 #else // SPRMAKE_RENDER_SPRITE
 
 float4x4 ProjMatrix : PROJECTION;
@@ -354,10 +368,13 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 {
     SPRMAKE_ATLAS_INFO Out = (SPRMAKE_ATLAS_INFO)0;
 
+    float2 originalSize;
+    float2 leftBottomTrimSize;
+
     // select atlas
 [[SelectAtlasCode]]
 
-    Out.LeftBottomPos = Out.Size * SprMake_AtlasLeftBottomPosMul;
+    Out.LeftBottomPos = originalSize * SprMake_AtlasLeftBottomPosMul + leftBottomTrimSize;
 
 #if SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
     float2 uvSwapTemp;
@@ -483,7 +500,8 @@ float2 SprMake_CalcTexCoord(
             Tex.y);
 }
 
-#ifdef MIKUMIKUMOVING
+#if SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
+// for MikuMikuMoving
 
 // Active light info
 struct SPRMAKE_LIGHT_INFO
@@ -525,7 +543,7 @@ SPRMAKE_LIGHT_INFO SprMake_GetActiveLightInfo()
     return Out;
 }
 
-#endif // MIKUMIKUMOVING
+#endif // SPRMAKE_CONFIG_SHADOW != 0 && defined(MIKUMIKUMOVING)
 
 //----------------------------------------------------------
 // Shader for object

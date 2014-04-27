@@ -118,7 +118,7 @@ namespace ruche.mmm.tools.spriteMaker
         /// <remarks>
         /// 実際に利用される値は GetSpriteViewportWidth メソッドで取得すること。
         /// </remarks>
-        [DefaultValue(45.0f)]
+        [DefaultValue(64.0f)]
         public float SpriteViewportWidth
         {
             get { return (float)this["SpriteViewportWidth"]; }
