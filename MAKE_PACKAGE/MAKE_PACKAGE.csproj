@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{072D9C77-6104-4D8E-8146-7873EC93E460}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MAKE_PACKAGE</RootNamespace>
+    <AssemblyName>MAKE_PACKAGE</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)"=="Release" (
+    set PACK_DIR=$(SolutionDir)package\MMMSpriteMaker\
+) else (
+    set PACK_DIR=$(SolutionDir)package\MMMSpriteMaker_$(ConfigurationName)\
+)
+set APP_DIR=$(SolutionDir)MMMSpriteMaker\$(OutDir)\
+set LOADERS_DLL_DIR=$(SolutionDir)ruche.datas.textureAtlas.loaders\$(OutDir)\
+
+if exist "%25PACK_DIR%25" rmdir /S /Q "%25PACK_DIR%25"
+mkdir "%25PACK_DIR%25"
+mkdir "%25PACK_DIR%25ja"
+mkdir "%25PACK_DIR%25plugins"
+
+copy /Y "$(SolutionDir)common\*.*" "%25PACK_DIR%25"
+
+copy /Y "%25APP_DIR%25*.dll"        "%25PACK_DIR%25"
+copy /Y "%25APP_DIR%25*.exe"        "%25PACK_DIR%25"
+copy /Y "%25APP_DIR%25*.exe.config" "%25PACK_DIR%25"
+copy /Y "%25APP_DIR%25ja\*.dll"     "%25PACK_DIR%25ja"
+
+copy /Y "%25LOADERS_DLL_DIR%25*.dll" "%25PACK_DIR%25"
+
+exit /b 0
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

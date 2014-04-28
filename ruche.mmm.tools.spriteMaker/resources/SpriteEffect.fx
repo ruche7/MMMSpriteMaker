@@ -106,20 +106,15 @@ static float2 SprMake_AtlasSizes[SPRMAKE_ATLAS_COUNT] =
 [[AtlasSizes]]
     };
 
-static float2 SprMake_AtlasOriginalSizes[SPRMAKE_ATLAS_COUNT] =
-    {
-[[AtlasOriginalSizes]]
-    };
-
-static float2 SprMake_AtlasLeftBottomTrimSizes[SPRMAKE_ATLAS_COUNT] =
-    {
-[[AtlasLeftBottomTrimSizes]]
-    };
-
-static float2 SprMake_AtlasLeftBottomPosMul =
+static float2 SprMake_AtlasBasePointMul =
     {
         -0.5f * fmod(SPRMAKE_CONFIG_BASEPOINT, 3),
         0.5f * (floor(SPRMAKE_CONFIG_BASEPOINT / 3) - 2),
+    };
+
+static float2 SprMake_AtlasPosLeftBottoms[SPRMAKE_ATLAS_COUNT] =
+    {
+[[AtlasPosLeftBottoms]]
     };
 
 static float2 SprMake_AtlasUVMul =
@@ -353,8 +348,8 @@ bool SprMake_FlipVert < string UIName = "Flip_V"; > = false;
 // Texture atlas info
 struct SPRMAKE_ATLAS_INFO
 {
-    float2 LeftBottomPos;
     float2 Size;
+    float2 PosLeftBottom;
     float2 UVLeftTop;
     float2 UVRightTop;
     float2 UVRightBottom;
@@ -368,13 +363,8 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 {
     SPRMAKE_ATLAS_INFO Out = (SPRMAKE_ATLAS_INFO)0;
 
-    float2 originalSize;
-    float2 leftBottomTrimSize;
-
     // select atlas
 [[SelectAtlasCode]]
-
-    Out.LeftBottomPos = originalSize * SprMake_AtlasLeftBottomPosMul + leftBottomTrimSize;
 
 #if SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
     float2 uvSwapTemp;
@@ -420,11 +410,11 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 //--------------------------------------
 // Calculate position
 //--------------------------------------
-float4 SprMake_CalcPosition(float4 Pos, float2 AtlasLeftBottomPos, float2 AtlasSize)
+float4 SprMake_CalcPosition(float4 Pos, float2 AtlasPosLeftBottom, float2 AtlasSize)
 {
     float4 Out = Pos;
 
-    Out.xy = AtlasLeftBottomPos + (Out.xy * AtlasSize);
+    Out.xy = AtlasPosLeftBottom + (Out.xy * AtlasSize);
 
 #ifdef SPRMAKE_RENDER_BILLBOARD
     Out.xyz = mul(Out.xyz, BillboardMatrix);
@@ -438,11 +428,11 @@ float4 SprMake_CalcPosition(float4 Pos, float2 AtlasLeftBottomPos, float2 AtlasS
 //--------------------------------------
 float4 SprMake_CalcWorldPosition(
     float4 Pos,
-    float2 AtlasLeftBottomPos,
+    float2 AtlasPosLeftBottom,
     float2 AtlasSize,
     uniform float4x4 WorldMat)
 {
-    return mul(SprMake_CalcPosition(Pos, AtlasLeftBottomPos, AtlasSize), WorldMat);
+    return mul(SprMake_CalcPosition(Pos, AtlasPosLeftBottom, AtlasSize), WorldMat);
 }
 
 //--------------------------------------
@@ -584,7 +574,7 @@ VS_OUTPUT SprMake_VS(
     float4 wpos =
         SprMake_CalcWorldPosition(
             Pos,
-            atlasInfo.LeftBottomPos,
+            atlasInfo.PosLeftBottom,
             atlasInfo.Size,
             WorldMatrix);
     Out.Pos = SprMake_CalcVertexPosition(wpos, ViewMatrix, ProjMatrix);
@@ -806,7 +796,7 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
     float4 wpos =
         SprMake_CalcWorldPosition(
             Pos,
-            atlasInfo.LeftBottomPos,
+            atlasInfo.PosLeftBottom,
             atlasInfo.Size,
             WorldMatrix);
     wpos.xyz -= lightDir * ((lightDir.y == 0) ? -999999.9f : (wpos.y / lightDir.y));
@@ -928,7 +918,7 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
     float4 wpos =
         SprMake_CalcWorldPosition(
             Pos,
-            atlasInfo.LeftBottomPos,
+            atlasInfo.PosLeftBottom,
             atlasInfo.Size,
             WorldMatrix);
     Out.Pos = mul(wpos, lightInfo.WVPMatrix);
@@ -940,7 +930,7 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
 #else // MIKUMIKUMOVING
     // for MikuMikuEffect
 
-    float4 bpos = SprMake_CalcPosition(Pos, atlasInfo.LeftBottomPos, atlasInfo.Size);
+    float4 bpos = SprMake_CalcPosition(Pos, atlasInfo.PosLeftBottom, atlasInfo.Size);
     Out.Pos = mul(bpos, LightWVPMatrix);
 
     Out.ShadowMapTex = Out.Pos;

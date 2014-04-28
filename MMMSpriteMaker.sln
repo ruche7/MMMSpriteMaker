@@ -15,6 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ruche.datas.textureAtlas.lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testApp", "testApp\testApp.csproj", "{9125FDBD-D095-4033-BBD6-AB80E3015958}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAKE_PACKAGE", "MAKE_PACKAGE\MAKE_PACKAGE.csproj", "{072D9C77-6104-4D8E-8146-7873EC93E460}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4103E339-B2FE-4BFA-9E78-9C322942A7FB} = {4103E339-B2FE-4BFA-9E78-9C322942A7FB}
+		{9EF5DBFC-BEA8-4CF1-82F3-002B574C9E91} = {9EF5DBFC-BEA8-4CF1-82F3-002B574C9E91}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +51,10 @@ Global
 		{9125FDBD-D095-4033-BBD6-AB80E3015958}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9125FDBD-D095-4033-BBD6-AB80E3015958}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9125FDBD-D095-4033-BBD6-AB80E3015958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{072D9C77-6104-4D8E-8146-7873EC93E460}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{072D9C77-6104-4D8E-8146-7873EC93E460}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{072D9C77-6104-4D8E-8146-7873EC93E460}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{072D9C77-6104-4D8E-8146-7873EC93E460}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
