@@ -11,6 +11,9 @@ namespace ruche.datas.textureAtlas.loaders
     /// <summary>
     /// Cocos2d形式ファイルからテクスチャアトラスを作成するクラス。
     /// </summary>
+    /// <remarks>
+    /// format 1 ～ 3 に対応している。 format 0 には対応しない。
+    /// </remarks>
     public sealed class Cocos2dTextureAtlasLoader : ITextureAtlasLoader
     {
         /// <summary>
@@ -72,6 +75,16 @@ namespace ruche.datas.textureAtlas.loaders
         }
 
         /// <summary>
+        /// plist の各要素をパースして配列を作成する。
+        /// </summary>
+        /// <param name="elements">plist 要素の列挙。</param>
+        /// <returns>パース結果の配列(リスト)。</returns>
+        private static List<dynamic> ParseArray(IEnumerable<XElement> elements)
+        {
+            return elements.Select(e => ParseValue(e)).ToList();
+        }
+
+        /// <summary>
         /// plist の各要素値をパースする。
         /// </summary>
         /// <param name="value">plist 要素値。</param>
@@ -99,8 +112,7 @@ namespace ruche.datas.textureAtlas.loaders
                 return ParseElements(value.Elements());
 
             case "array":
-                // not supported
-                break;
+                return ParseArray(value.Elements());
             }
 
             throw new NotSupportedException(
@@ -191,24 +203,52 @@ namespace ruche.datas.textureAtlas.loaders
                 var root = Get(Get(doc, "plist"), "dict");
                 var dict = ParseElements(root.Elements());
 
-                Dictionary<string, dynamic> meta = dict["metadata"];
+                IDictionary<string, dynamic> meta = dict["metadata"];
                 string imgFileName =
                     meta["textureFileName"] ?? meta["realTextureFileName"];
                 Size imgSize = ParseSizeString(meta["size"]);
 
-                var frames =
-                    from kv in (dict["frames"] as Dictionary<string, dynamic>)
-                    let frameRect = ParseRectString(kv.Value["frame"] as string)
-                    let rotated = (bool)kv.Value["rotated"]
-                    let srcSize = ParseSizeString(kv.Value["sourceSize"] as string)
-                    let trimRect = ParseRectString(kv.Value["sourceColorRect"] as string)
-                    select
-                        TextureAtlasFrame.Create(
-                            frameRect.Size,
-                            frameRect.Location,
-                            rotated,
-                            srcSize,
-                            trimRect.Location);
+                // frames のフォーマットは format 値により異なる
+                // format 値が無い場合は format=3 として扱う
+                IEnumerable<TextureAtlasFrame> frames = null;
+                if (meta.ContainsKey("format") && (int)meta["format"] < 3)
+                {
+                    // format=1, format=2
+                    frames =
+                        from kv in (dict["frames"] as IDictionary<string, dynamic>)
+                        let f = kv.Value as IDictionary<string, dynamic>
+                        let frameRect = ParseRectString(f["frame"] as string)
+                        let rotated =
+                            f.ContainsKey("rotated") ? (bool)f["rotated"] : false
+                        let srcSize = ParseSizeString(f["sourceSize"] as string)
+                        let trimRect = ParseRectString(f["sourceColorRect"] as string)
+                        select
+                            TextureAtlasFrame.Create(
+                                frameRect.Size,
+                                frameRect.Location,
+                                rotated,
+                                srcSize,
+                                trimRect.Location);
+                }
+                else
+                {
+                    // format=3
+                    frames =
+                        from kv in (dict["frames"] as IDictionary<string, dynamic>)
+                        let f = kv.Value as IDictionary<string, dynamic>
+                        let frameSize = ParseSizeString(f["spriteSize"] as string)
+                        let texRect = ParseRectString(f["textureRect"] as string)
+                        let rotated = (bool)f["textureRotated"]
+                        let srcSize = ParseSizeString(f["spriteSourceSize"] as string)
+                        let trimRect = ParseRectString(f["spriteColorRect"] as string)
+                        select
+                            TextureAtlasFrame.Create(
+                                frameSize,
+                                texRect.Location,
+                                rotated,
+                                srcSize,
+                                trimRect.Location);
+                }
 
                 return new TextureAtlas(imgFileName, imgSize, frames);
             }
