@@ -230,20 +230,18 @@ namespace ruche.mmm.tools.spriteMaker
             get { return MakeUVString(f => f.LeftBottomUVPoint); }
         }
 
-        private string MakeSelectAtlasIfElseBlockCode(int index, string indent)
+        private string MakeSelectAtlasBlockCode(int index, string indent)
         {
             return
                 indent +
                 string.Join(
                     Environment.NewLine + indent,
-                    "{",
-                    "    Out.Size = SprMake_AtlasSizes[" + index + "];",
-                    "    Out.PosLeftBottom = SprMake_AtlasPosLeftBottoms[" + index + "];",
-                    "    Out.UVLeftTop = SprMake_AtlasUVLeftTops[" + index + "];",
-                    "    Out.UVRightTop = SprMake_AtlasUVRightTops[" + index + "];",
-                    "    Out.UVRightBottom = SprMake_AtlasUVRightBottoms[" + index + "];",
-                    "    Out.UVLeftBottom = SprMake_AtlasUVLeftBottoms[" + index + "];",
-                    "}");
+                    "Out.Size = SprMake_AtlasSizes[" + index + "];",
+                    "Out.PosLeftBottom = SprMake_AtlasPosLeftBottoms[" + index + "];",
+                    "Out.UVLeftTop = SprMake_AtlasUVLeftTops[" + index + "];",
+                    "Out.UVRightTop = SprMake_AtlasUVRightTops[" + index + "];",
+                    "Out.UVRightBottom = SprMake_AtlasUVRightBottoms[" + index + "];",
+                    "Out.UVLeftBottom = SprMake_AtlasUVLeftBottoms[" + index + "];");
         }
 
         [TemplateReplaceId]
@@ -252,6 +250,12 @@ namespace ruche.mmm.tools.spriteMaker
             get
             {
                 var indent = "    ";
+
+                if (TextureAtlas.Frames.Count == 1)
+                {
+                    return MakeSelectAtlasBlockCode(0, indent);
+                }
+
                 return
                     string.Join(
                         Environment.NewLine,
@@ -260,8 +264,12 @@ namespace ruche.mmm.tools.spriteMaker
                         let else_ = (i > 0) ? "else " : ""
                         let if_ = (ri > 0) ? ("if (SprMake_AtlasIndex >= " + ri + ")") : ""
                         select
-                            indent + else_ + if_ + Environment.NewLine +
-                            MakeSelectAtlasIfElseBlockCode(ri, indent));
+                            string.Join(
+                                Environment.NewLine,
+                                indent + else_ + if_,
+                                indent + "{",
+                                MakeSelectAtlasBlockCode(ri, indent + indent),
+                                indent + "}"));
             }
         }
 

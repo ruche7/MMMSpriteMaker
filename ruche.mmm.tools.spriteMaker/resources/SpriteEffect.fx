@@ -325,8 +325,6 @@ int SprMake_AtlasIndex <
     string UIWidget = "Numeric";
     int UIMin = 0;
     int UIMax = SPRMAKE_ATLAS_COUNT - 1; > = 0;
-#else
-static int SprMake_AtlasIndex = 0;
 #endif
 
 #if SPRMAKE_CONFIG_LIGHT > 1
