@@ -175,12 +175,12 @@ float4x4 ViewMatrix : VIEW;
 
 #ifdef SPRMAKE_RENDER_BILLBOARD
 // Matrices for billboard
-float4x4 WorldViewMatrixInverse : WORLDVIEWINVERSE;
+float4x4 ViewMatrixInverse : VIEWINVERSE;
 static float3x3 BillboardMatrix =
     {
-        normalize(WorldViewMatrixInverse[0].xyz),
-        normalize(WorldViewMatrixInverse[1].xyz),
-        normalize(WorldViewMatrixInverse[2].xyz),
+        normalize(ViewMatrixInverse[0].xyz),
+        normalize(ViewMatrixInverse[1].xyz),
+        normalize(ViewMatrixInverse[2].xyz),
     };
 #endif // SPRMAKE_RENDER_BILLBOARD
 
@@ -439,10 +439,6 @@ float4 SprMake_CalcPosition(float4 Pos, float2 AtlasPosLeftBottom, float2 AtlasS
 
     Out.xy = AtlasPosLeftBottom + (Out.xy * AtlasSize);
 
-#ifdef SPRMAKE_RENDER_BILLBOARD
-    Out.xyz = mul(Out.xyz, BillboardMatrix);
-#endif // SPRMAKE_RENDER_BILLBOARD
-
     return Out;
 }
 
@@ -455,7 +451,13 @@ float4 SprMake_CalcWorldPosition(
     float2 AtlasSize,
     uniform float4x4 WorldMat)
 {
-    return mul(SprMake_CalcPosition(Pos, AtlasPosLeftBottom, AtlasSize), WorldMat);
+    float4 Out = mul(SprMake_CalcPosition(Pos, AtlasPosLeftBottom, AtlasSize), WorldMat);
+
+#ifdef SPRMAKE_RENDER_BILLBOARD
+    Out.xyz = mul(Out.xyz, BillboardMatrix);
+#endif // SPRMAKE_RENDER_BILLBOARD
+
+    return Out;
 }
 
 //--------------------------------------
@@ -492,6 +494,22 @@ float4 SprMake_CalcVertexPosition(
 
 #endif // MIKUMIKUMOVING
 #endif // SPRMAKE_RENDER_SPRITE
+
+    return Out;
+}
+
+//--------------------------------------
+// Calculate world normal
+//--------------------------------------
+float3 SprMake_CalcWorldNormal(float3 Normal, uniform float4x4 WorldMat)
+{
+    float3 Out = mul(Normal, (float3x3)WorldMatrix);
+
+#ifdef SPRMAKE_RENDER_BILLBOARD
+    Out = mul(Out, BillboardMatrix);
+#endif // SPRMAKE_RENDER_BILLBOARD
+
+    Out = normalize(Out);
 
     return Out;
 }
@@ -602,7 +620,7 @@ VS_OUTPUT SprMake_VS(
             WorldMatrix);
     Out.Pos = SprMake_CalcVertexPosition(wpos, ViewMatrix, ProjMatrix);
 
-    Out.Normal = normalize(mul(Normal, (float3x3)WorldMatrix));
+    Out.Normal = SprMake_CalcWorldNormal(Normal, WorldMatrix);
 
     Out.Tex =
         SprMake_CalcTexCoord(

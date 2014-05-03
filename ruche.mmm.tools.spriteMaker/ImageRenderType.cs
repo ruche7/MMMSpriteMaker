@@ -16,6 +16,7 @@ namespace ruche.mmm.tools.spriteMaker
             ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
             ImageRenderTypeFlags.CanRenderPost |
+            ImageRenderTypeFlags.CanRenderBack |
             ImageRenderTypeFlags.UsePixelRatio |
             ImageRenderTypeFlags.UseViewportWidth |
             ImageRenderTypeFlags.UseZRange)]
@@ -29,6 +30,7 @@ namespace ruche.mmm.tools.spriteMaker
             ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
             ImageRenderTypeFlags.CanRenderPost |
+            ImageRenderTypeFlags.CanRenderBack |
             ImageRenderTypeFlags.UseZRange)]
         DotByDotSprite = 1,
 
