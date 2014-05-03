@@ -153,12 +153,20 @@ static float2 SprMake_AtlasUVLeftBottoms[SPRMAKE_ATLAS_COUNT] =
 
 #if SPRMAKE_CONFIG_POSTEFFECT != 0
 // for post effect
+
 float Script : STANDARDSGLOBAL <
     string ScriptOutput = "color";
     string ScriptClass = "sceneorobject";
     string ScriptOrder = "postprocess"; > = 0.8f;
-float4 ClearColor = { 0, 0, 0, 1 };
-float ClearDepth = 1;
+
+#ifdef MIKUMIKUMOVING
+float4 PostClearColor : BACKGROUNDCOLOR;
+#else // MIKUMIKUMOVING
+float4 PostClearColor = { 0, 0, 0, 1 };
+#endif // MIKUMIKUMOVING
+
+float PostClearDepth = 1;
+
 #endif // SPRMAKE_CONFIG_POSTEFFECT != 0
 
 float4x4 WorldMatrix : WORLD;
@@ -749,8 +757,8 @@ technique MainTec <
     string Script =
         "RenderColorTarget0=;"
         "RenderDepthStencilTarget=;"
-        "ClearSetColor=ClearColor;"
-        "ClearSetDepth=ClearDepth;"
+        "ClearSetColor=PostClearColor;"
+        "ClearSetDepth=PostClearDepth;"
         "Clear=Color;"
         "Clear=Depth;"
         "ScriptExternal=Color;"
@@ -785,8 +793,8 @@ technique MainTecSS <
     string Script =
         "RenderColorTarget0=;"
         "RenderDepthStencilTarget=;"
-        "ClearSetColor=ClearColor;"
-        "ClearSetDepth=ClearDepth;"
+        "ClearSetColor=PostClearColor;"
+        "ClearSetDepth=PostClearDepth;"
         "Clear=Color;"
         "Clear=Depth;"
         "ScriptExternal=Color;"
