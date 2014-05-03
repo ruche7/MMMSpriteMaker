@@ -14,28 +14,33 @@ namespace ruche.mmm.tools.spriteMaker
         None = 0,
 
         /// <summary>
+        /// ポストエフェクトとして描画できることを示す。
+        /// </summary>
+        CanRenderPost = 1 << 0,
+
+        /// <summary>
         /// 背面を描画できることを示す。
         /// </summary>
-        CanRenderBack = 1 << 0,
+        CanRenderBack = 1 << 1,
 
         /// <summary>
         /// ライトを有効にできることを示す。
         /// </summary>
-        CanUseLight = 1 << 1,
+        CanUseLight = 1 << 2,
 
         /// <summary>
         /// ピクセル倍率設定を利用することを示す。
         /// </summary>
-        UsePixelRatio = 1 << 2,
+        UsePixelRatio = 1 << 3,
 
         /// <summary>
         /// ビューポート幅設定を利用することを示す。
         /// </summary>
-        UseViewportWidth = 1 << 3,
+        UseViewportWidth = 1 << 4,
 
         /// <summary>
         /// Zオーダー範囲設定を利用することを示す。
         /// </summary>
-        UseZRange = 1 << 4,
+        UseZRange = 1 << 5,
     }
 }

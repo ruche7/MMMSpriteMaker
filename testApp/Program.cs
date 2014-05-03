@@ -62,12 +62,20 @@ namespace testApp
             testIndex /= 2;
             effectFilePath += renderingBack ? "-bk" : "";
 
+            bool postEffect = (testIndex % 2 == 0);
+            testIndex /= 2;
+            effectFilePath += postEffect ? "-P" : "";
+
             if (testIndex > 0)
             {
                 return null;
             }
 
             effectFilePath = Path.ChangeExtension(effectFilePath, ".fx");
+
+            // ポストエフェクトなら対応するXファイルも生成
+            string accFilePath =
+                postEffect ? Path.ChangeExtension(effectFilePath, ".x") : null;
 
             return
                 new SpriteMaker
@@ -76,13 +84,14 @@ namespace testApp
                         new EffectFileConfig
                         {
                             RenderType = renderType,
+                            PostEffect = postEffect,
                             RenderingBack = renderingBack,
                             LightSetting = lightSetting,
                             BasePoint = basePoint,
                         },
                     TextureAtlasLoader = GetTextureAtlasLoader(),
                     InputTextureAtlasPath = textureAtlasPath,
-                    OutputAccessoryFilePath = null,
+                    OutputAccessoryFilePath = accFilePath,
                     OutputEffectFilePath = effectFilePath,
                 };
         }
@@ -96,10 +105,11 @@ namespace testApp
         /// </returns>
         private static bool IsEffectFileConfigApplied(EffectFileConfig config)
         {
-            // ライト設定、裏面描画設定は RenderType 次第ではそのまま適用されない
+            // RenderType 次第ではそのまま適用されない値をチェック
             return (
                 config.LightSetting == config.GetLightSetting() &&
-                config.RenderingBack == config.IsRenderingBack());
+                config.RenderingBack == config.IsRenderingBack() &&
+                config.PostEffect == config.IsPostEffect());
         }
 
         /// <summary>

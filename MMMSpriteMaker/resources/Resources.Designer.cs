@@ -224,6 +224,15 @@ namespace MMMSpriteMaker.resources {
         }
         
         /// <summary>
+        ///   Post effect に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string ConfigWindow_PostEffect {
+            get {
+                return ResourceManager.GetString("ConfigWindow_PostEffect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Rendering back に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string ConfigWindow_RenderingBack {

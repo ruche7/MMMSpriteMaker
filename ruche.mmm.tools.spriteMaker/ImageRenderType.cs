@@ -15,6 +15,7 @@ namespace ruche.mmm.tools.spriteMaker
             Name = "Enum_ImageRenderType_Sprite",
             ResourceType = typeof(Resources))]
         [ImageRenderTypeFlags(
+            ImageRenderTypeFlags.CanRenderPost |
             ImageRenderTypeFlags.UsePixelRatio |
             ImageRenderTypeFlags.UseViewportWidth |
             ImageRenderTypeFlags.UseZRange)]
@@ -26,7 +27,9 @@ namespace ruche.mmm.tools.spriteMaker
         [Display(
             Name = "Enum_ImageRenderType_DotByDotSprite",
             ResourceType = typeof(Resources))]
-        [ImageRenderTypeFlags(ImageRenderTypeFlags.UseZRange)]
+        [ImageRenderTypeFlags(
+            ImageRenderTypeFlags.CanRenderPost |
+            ImageRenderTypeFlags.UseZRange)]
         DotByDotSprite = 1,
 
         /// <summary>

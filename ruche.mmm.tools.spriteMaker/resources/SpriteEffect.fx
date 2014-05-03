@@ -16,6 +16,10 @@
 
 // 0:No
 // 1:Yes
+#define SPRMAKE_CONFIG_POSTEFFECT [[ConfigPostEffect]]
+
+// 0:No
+// 1:Yes
 #define SPRMAKE_CONFIG_RENDERBACK [[ConfigRenderingBack]]
 
 // 0:Disabled
@@ -81,7 +85,10 @@
     #define SPRMAKE_CONFIG_LIGHT 0
     #undef SPRMAKE_CONFIG_SHADOW
     #define SPRMAKE_CONFIG_SHADOW 0
-#endif
+#else // SPRMAKE_RENDER_SPRITE
+    #undef SPRMAKE_CONFIG_POSTEFFECT
+    #define SPRMAKE_CONFIG_POSTEFFECT 0
+#endif // SPRMAKE_RENDER_SPRITE
 
 //----------------------------------------------------------
 // Texture atlas parameters
@@ -143,6 +150,16 @@ static float2 SprMake_AtlasUVLeftBottoms[SPRMAKE_ATLAS_COUNT] =
 //----------------------------------------------------------
 // Global parameters
 //----------------------------------------------------------
+
+#if SPRMAKE_CONFIG_POSTEFFECT != 0
+// for post effect
+float Script : STANDARDSGLOBAL <
+    string ScriptOutput = "color";
+    string ScriptClass = "sceneorobject";
+    string ScriptOrder = "postprocess"; > = 0.8f;
+float4 ClearColor = { 0, 0, 0, 1 };
+float ClearDepth = 1;
+#endif // SPRMAKE_CONFIG_POSTEFFECT != 0
 
 float4x4 WorldMatrix : WORLD;
 float4x4 ViewProjMatrix : VIEWPROJECTION;
@@ -721,11 +738,25 @@ float4 SprMake_PS(VS_OUTPUT IN, uniform bool useSelfShadow) : COLOR0
 //--------------------------------------
 // Technique for object without SelfShadow
 //--------------------------------------
+technique MainTec <
+    string MMDPass = "object";
+    bool UseTexture = true;
+    bool UseToon = false;
 #ifdef MIKUMIKUMOVING
-technique MainTec < string MMDPass = "object"; bool UseTexture = true; bool UseToon = false; bool UseSelfShadow = false; >
-#else
-technique MainTec < string MMDPass = "object"; bool UseTexture = true; bool UseToon = false; >
-#endif
+    bool UseSelfShadow = false;
+#endif // MIKUMIKUMOVING
+#if SPRMAKE_CONFIG_POSTEFFECT != 0
+    string Script =
+        "RenderColorTarget0=;"
+        "RenderDepthStencilTarget=;"
+        "ClearSetColor=ClearColor;"
+        "ClearSetDepth=ClearDepth;"
+        "Clear=Color;"
+        "Clear=Depth;"
+        "ScriptExternal=Color;"
+        "Pass=DrawObject;";
+#endif // SPRMAKE_CONFIG_POSTEFFECT != 0
+    >
 {
     pass DrawObject
     {
@@ -741,11 +772,27 @@ technique MainTec < string MMDPass = "object"; bool UseTexture = true; bool UseT
 //--------------------------------------
 // Technique for object with SelfShadow
 //--------------------------------------
+technique MainTecSS <
 #ifdef MIKUMIKUMOVING
-technique MainTecSS < string MMDPass = "object"; bool UseTexture = true; bool UseToon = false; bool UseSelfShadow = true; >
-#else
-technique MainTecSS < string MMDPass = "object_ss"; bool UseTexture = true; bool UseToon = false; >
-#endif
+    string MMDPass = "object";
+    bool UseSelfShadow = true;
+#else // MIKUMIKUMOVING
+    string MMDPass = "object_ss";
+#endif // MIKUMIKUMOVING
+    bool UseTexture = true;
+    bool UseToon = false;
+#if SPRMAKE_CONFIG_POSTEFFECT != 0
+    string Script =
+        "RenderColorTarget0=;"
+        "RenderDepthStencilTarget=;"
+        "ClearSetColor=ClearColor;"
+        "ClearSetDepth=ClearDepth;"
+        "Clear=Color;"
+        "Clear=Depth;"
+        "ScriptExternal=Color;"
+        "Pass=DrawObject;";
+#endif // SPRMAKE_CONFIG_POSTEFFECT != 0
+    >
 {
     pass DrawObject
     {

@@ -230,4 +230,7 @@
   <data name="Color_R" xml:space="preserve">
     <value>R</value>
   </data>
+  <data name="ConfigWindow_PostEffect" xml:space="preserve">
+    <value>ポストエフェクトとして描画</value>
+  </data>
 </root>

@@ -28,6 +28,34 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         /// <summary>
+        /// ポストエフェクトとして描画するか否かを取得または設定する。
+        /// </summary>
+        /// <remarks>
+        /// 実際にポストエフェクトとして描画するか否かは
+        /// IsPostEffect メソッドで取得すること。
+        /// </remarks>
+        [DefaultValue(false)]
+        public bool PostEffect
+        {
+            get { return (bool)this["PostEffect"]; }
+            set { this["PostEffect"] = value; }
+        }
+
+        /// <summary>
+        /// 実際にポストエフェクトとして描画するか否かを取得する。
+        /// </summary>
+        /// <returns>
+        /// ポストエフェクトとして描画するならば true 。そうでなければ false 。
+        /// </returns>
+        public bool IsPostEffect()
+        {
+            return
+                RenderType.HasAnyFlags(ImageRenderTypeFlags.CanRenderPost) ?
+                    PostEffect :
+                    false;
+        }
+
+        /// <summary>
         /// 背面を描画するか否かを取得または設定する。
         /// </summary>
         /// <remarks>

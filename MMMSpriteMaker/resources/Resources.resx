@@ -233,4 +233,7 @@ Please re-get this tool from an official web site etc.</value>
   <data name="Color_R" xml:space="preserve">
     <value>R</value>
   </data>
+  <data name="ConfigWindow_PostEffect" xml:space="preserve">
+    <value>Post effect</value>
+  </data>
 </root>

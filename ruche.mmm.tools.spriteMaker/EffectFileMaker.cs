@@ -87,6 +87,12 @@ namespace ruche.mmm.tools.spriteMaker
         }
 
         [TemplateReplaceId]
+        private int ConfigPostEffect
+        {
+            get { return Config.IsPostEffect() ? 1 : 0; }
+        }
+
+        [TemplateReplaceId]
         private int ConfigRenderingBack
         {
             get { return Config.IsRenderingBack() ? 1 : 0; }

@@ -130,6 +130,10 @@
                     ItemsSource="{Binding Source={StaticResource imageRenderTypes}}"
                     SelectedValue="{Binding RenderType}" />
                 <CheckBox
+                    Content="{x:Static res:Resources.ConfigWindow_PostEffect}"
+                    IsChecked="{Binding PostEffect}"
+                    Visibility="{Binding CanRenderPost, Converter={StaticResource booleanVisibilityConverter}}" />
+                <CheckBox
                     Content="{x:Static res:Resources.ConfigWindow_RenderingBack}"
                     IsChecked="{Binding RenderingBack}"
                     Visibility="{Binding CanRenderBack, Converter={StaticResource booleanVisibilityConverter}}" />

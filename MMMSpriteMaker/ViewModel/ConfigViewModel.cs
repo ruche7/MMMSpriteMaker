@@ -117,6 +117,32 @@ namespace MMMSpriteMaker.ViewModel
         }
 
         /// <summary>
+        /// イメージの描画方法に対してポストエフェクト描画を指定可能か否かを取得する。
+        /// </summary>
+        public bool CanRenderPost
+        {
+            get { return canRenderPost; }
+            private set
+            {
+                if (value != canRenderPost)
+                {
+                    canRenderPost = value;
+                    NotifyPropertyChanged("CanRenderPost");
+                }
+            }
+        }
+        private bool canRenderPost = false;
+
+        /// <summary>
+        /// ポストエフェクトとして描画するか否かを取得または設定する。
+        /// </summary>
+        public bool PostEffect
+        {
+            get { return EffectFileConfig.PostEffect; }
+            set { EffectFileConfig.PostEffect = value; }
+        }
+
+        /// <summary>
         /// イメージの描画方法に対して背面描画を指定可能か否かを取得する。
         /// </summary>
         public bool CanRenderBack
@@ -323,6 +349,7 @@ namespace MMMSpriteMaker.ViewModel
         /// <param name="renderType">イメージの描画方法。</param>
         private void ChangeRenderTypeStatus(ImageRenderType renderType)
         {
+            CanRenderPost = renderType.HasAnyFlags(ImageRenderTypeFlags.CanRenderPost);
             CanRenderBack = renderType.HasAnyFlags(ImageRenderTypeFlags.CanRenderBack);
             CanUseLight = renderType.HasAnyFlags(ImageRenderTypeFlags.CanUseLight);
             UsePixelRatio = renderType.HasAnyFlags(ImageRenderTypeFlags.UsePixelRatio);
