@@ -23,6 +23,8 @@ MikuMikuMoving用2Dアクセサリ＆エフェクト作成ツール『MMMSpriteMaker』の使用方法マ
 
 『MMMSpriteMaker』は、別ツール等で作成したテクスチャアトラスから、MikuMikuMoving上で表示できるスプライト、ビルボード、板ポリゴンを自動生成するツールです。
 
+#ref(MikuMikuMoving上での表示例.jpg,left,nolink,MikuMikuMoving上での表示例);
+
 :テクスチャアトラス（Texture atlas）とは|
 --複数のテクスチャ（画像）を1つのテクスチャファイルにまとめたものです。
 #ref(テクスチャアトラス説明画像.png,left,nolink,テクスチャアトラス説明画像);
@@ -327,5 +329,7 @@ MikuMikuMovingが起動可能であれば、当ツールの起動に必要な環境にはなっているはずで
 
 *更新履歴 [#history]
 
+:2014-05-04|
+--MikuMikuMoving上での表示例画像を追加。
 :2014-05-04|
 --初版。
