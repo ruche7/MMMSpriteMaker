@@ -170,18 +170,32 @@ float PostClearDepth = 1;
 #endif // SPRMAKE_CONFIG_POSTEFFECT != 0
 
 float4x4 WorldMatrix : WORLD;
-float4x4 ViewProjMatrix : VIEWPROJECTION;
 float4x4 ViewMatrix : VIEW;
 
 #ifdef SPRMAKE_RENDER_BILLBOARD
 // Matrices for billboard
+static float3x3 WorldRotateMatrix =
+    {
+        normalize(WorldMatrix[0].xyz),
+        normalize(WorldMatrix[1].xyz),
+        normalize(WorldMatrix[2].xyz),
+    };
 float4x4 ViewMatrixInverse : VIEWINVERSE;
-static float3x3 BillboardMatrix =
+static float3x3 ViewRotateMatrixInverse =
     {
         normalize(ViewMatrixInverse[0].xyz),
         normalize(ViewMatrixInverse[1].xyz),
         normalize(ViewMatrixInverse[2].xyz),
     };
+float4x4 WorldMatrixInverse : WORLDINVERSE;
+static float3x3 WorldRotateMatrixInverse =
+    {
+        normalize(WorldMatrixInverse[0].xyz),
+        normalize(WorldMatrixInverse[1].xyz),
+        normalize(WorldMatrixInverse[2].xyz),
+    };
+static float3x3 BillboardMatrix =
+    mul(mul(WorldRotateMatrix, ViewRotateMatrixInverse), WorldRotateMatrixInverse);
 #endif // SPRMAKE_RENDER_BILLBOARD
 
 #ifdef SPRMAKE_RENDER_SPRITE
@@ -439,6 +453,10 @@ float4 SprMake_CalcPosition(float4 Pos, float2 AtlasPosLeftBottom, float2 AtlasS
 
     Out.xy = AtlasPosLeftBottom + (Out.xy * AtlasSize);
 
+#ifdef SPRMAKE_RENDER_BILLBOARD
+    Out.xyz = mul(Out.xyz, BillboardMatrix);
+#endif // SPRMAKE_RENDER_BILLBOARD
+
     return Out;
 }
 
@@ -448,16 +466,9 @@ float4 SprMake_CalcPosition(float4 Pos, float2 AtlasPosLeftBottom, float2 AtlasS
 float4 SprMake_CalcWorldPosition(
     float4 Pos,
     float2 AtlasPosLeftBottom,
-    float2 AtlasSize,
-    uniform float4x4 WorldMat)
+    float2 AtlasSize)
 {
-    float4 Out = mul(SprMake_CalcPosition(Pos, AtlasPosLeftBottom, AtlasSize), WorldMat);
-
-#ifdef SPRMAKE_RENDER_BILLBOARD
-    Out.xyz = mul(Out.xyz, BillboardMatrix);
-#endif // SPRMAKE_RENDER_BILLBOARD
-
-    return Out;
+    return mul(SprMake_CalcPosition(Pos, AtlasPosLeftBottom, AtlasSize), WorldMatrix);
 }
 
 //--------------------------------------
@@ -503,13 +514,13 @@ float4 SprMake_CalcVertexPosition(
 //--------------------------------------
 float3 SprMake_CalcWorldNormal(float3 Normal, uniform float4x4 WorldMat)
 {
-    float3 Out = mul(Normal, (float3x3)WorldMatrix);
+    float3 Out = Normal;
 
 #ifdef SPRMAKE_RENDER_BILLBOARD
     Out = mul(Out, BillboardMatrix);
 #endif // SPRMAKE_RENDER_BILLBOARD
 
-    Out = normalize(Out);
+    Out = normalize(mul(Out, (float3x3)WorldMatrix));
 
     return Out;
 }
@@ -612,12 +623,7 @@ VS_OUTPUT SprMake_VS(
 
     static const SPRMAKE_ATLAS_INFO atlasInfo = SprMake_GetAtlasInfo();
 
-    float4 wpos =
-        SprMake_CalcWorldPosition(
-            Pos,
-            atlasInfo.PosLeftBottom,
-            atlasInfo.Size,
-            WorldMatrix);
+    float4 wpos = SprMake_CalcWorldPosition(Pos, atlasInfo.PosLeftBottom, atlasInfo.Size);
     Out.Pos = SprMake_CalcVertexPosition(wpos, ViewMatrix, ProjMatrix);
 
     Out.Normal = SprMake_CalcWorldNormal(Normal, WorldMatrix);
@@ -864,12 +870,7 @@ VS_SHADOW_OUTPUT SprMake_ShadowVS(float4 Pos : POSITION, uniform int lightIndex)
     uniform float3 lightDir = LightDirection;
 #endif
 
-    float4 wpos =
-        SprMake_CalcWorldPosition(
-            Pos,
-            atlasInfo.PosLeftBottom,
-            atlasInfo.Size,
-            WorldMatrix);
+    float4 wpos = SprMake_CalcWorldPosition(Pos, atlasInfo.PosLeftBottom, atlasInfo.Size);
     wpos.xyz -= lightDir * ((lightDir.y == 0) ? -999999.9f : (wpos.y / lightDir.y));
     wpos.y += 0.02f;
     Out.Pos = SprMake_CalcVertexPosition(wpos, ViewMatrix, ProjMatrix);
@@ -986,12 +987,7 @@ VS_ZPLOT_OUTPUT SprMake_ZplotVS(float4 Pos : POSITION)
 
     static const SPRMAKE_LIGHT_INFO lightInfo = SprMake_GetActiveLightInfo();
 
-    float4 wpos =
-        SprMake_CalcWorldPosition(
-            Pos,
-            atlasInfo.PosLeftBottom,
-            atlasInfo.Size,
-            WorldMatrix);
+    float4 wpos = SprMake_CalcWorldPosition(Pos, atlasInfo.PosLeftBottom, atlasInfo.Size);
     Out.Pos = mul(wpos, lightInfo.WVPMatrix);
 
     Out.ShadowMapTex = Out.Pos;
