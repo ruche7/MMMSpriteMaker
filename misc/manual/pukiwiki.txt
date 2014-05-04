@@ -8,7 +8,7 @@ MikuMikuMoving用2Dアクセサリ＆エフェクト作成ツール『MMMSpriteMaker』の使用方法マ
 
 現在は下記の環境に基づいて記載しています。
 
--MMMSpriteMaker version 1.0
+-MMMSpriteMaker version 1.0.0
 -MikuMikuMoving version 1.2.5.9
 
 過去からの更新箇所については[[更新履歴>#history]]を参照してください。
