@@ -9,7 +9,7 @@ MikuMikuMoving用2Dアクセサリ＆エフェクト作成ツール『MMMSpriteMaker』の使用方法マ
 現在は下記の環境に基づいて記載しています。
 
 -MMMSpriteMaker version 1.1.0
--MikuMikuMoving version 1.2.5.9
+-[[MikuMikuMoving>https://sites.google.com/site/mikumikumoving/]] version 1.2.5.9
 
 過去からの更新箇所については[[更新履歴>#history]]を参照してください。
 
@@ -161,7 +161,7 @@ MikuMikuMoving上でどのように描画させるかを設定します。~
 
 **基準点位置 [#config-basepoint]
 
-表示される画像のどの位置を中心点とするか否かを設定します。~
+表示される画像の中心点位置を設定します。~
 設定した位置を基準として移動や回転といった座標変換を行うことになります。
 
 **画像反転 [#config-flip]
