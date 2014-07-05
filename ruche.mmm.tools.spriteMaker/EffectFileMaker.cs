@@ -236,49 +236,6 @@ namespace ruche.mmm.tools.spriteMaker
             get { return MakeUVString(f => f.LeftBottomUVPoint); }
         }
 
-        private string MakeSelectAtlasBlockCode(int index, string indent)
-        {
-            return
-                indent +
-                string.Join(
-                    Environment.NewLine + indent,
-                    "Out.Size = SprMake_AtlasSizes[" + index + "];",
-                    "Out.PosLeftBottom = SprMake_AtlasPosLeftBottoms[" + index + "];",
-                    "Out.UVLeftTop = SprMake_AtlasUVLeftTops[" + index + "];",
-                    "Out.UVRightTop = SprMake_AtlasUVRightTops[" + index + "];",
-                    "Out.UVRightBottom = SprMake_AtlasUVRightBottoms[" + index + "];",
-                    "Out.UVLeftBottom = SprMake_AtlasUVLeftBottoms[" + index + "];");
-        }
-
-        [TemplateReplaceId]
-        private string SelectAtlasCode
-        {
-            get
-            {
-                var indent = "    ";
-
-                if (TextureAtlas.Frames.Count == 1)
-                {
-                    return MakeSelectAtlasBlockCode(0, indent);
-                }
-
-                return
-                    string.Join(
-                        Environment.NewLine,
-                        from i in Enumerable.Range(0, TextureAtlas.Frames.Count)
-                        let ri = TextureAtlas.Frames.Count - i - 1
-                        let else_ = (i > 0) ? "else " : ""
-                        let if_ = (ri > 0) ? ("if (SprMake_AtlasIndex >= " + ri + ")") : ""
-                        select
-                            string.Join(
-                                Environment.NewLine,
-                                indent + else_ + if_,
-                                indent + "{",
-                                MakeSelectAtlasBlockCode(ri, indent + indent),
-                                indent + "}"));
-            }
-        }
-
         #endregion
     }
 }

@@ -394,14 +394,18 @@ struct SPRMAKE_ATLAS_INFO
 };
 
 //--------------------------------------
-// Get texture atlas info
+// Get texture atlas info (core)
 //--------------------------------------
-SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
+SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfoCore(uniform int index)
 {
     SPRMAKE_ATLAS_INFO Out = (SPRMAKE_ATLAS_INFO)0;
 
-    // select atlas
-[[SelectAtlasCode]]
+    Out.Size = SprMake_AtlasSizes[index];
+    Out.PosLeftBottom = SprMake_AtlasPosLeftBottoms[index];
+    Out.UVLeftTop = SprMake_AtlasUVLeftTops[index];
+    Out.UVRightTop = SprMake_AtlasUVRightTops[index];
+    Out.UVRightBottom = SprMake_AtlasUVRightBottoms[index];
+    Out.UVLeftBottom = SprMake_AtlasUVLeftBottoms[index];
 
 #if SPRMAKE_CONFIG_FLIP_H != 0 || SPRMAKE_CONFIG_FLIP_V != 0
     float2 uvSwapTemp;
@@ -442,6 +446,32 @@ SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
 #endif // SPRMAKE_CONFIG_FLIP_V != 0
 
     return Out;
+}
+
+//--------------------------------------
+// Get texture atlas info
+//--------------------------------------
+SPRMAKE_ATLAS_INFO SprMake_GetAtlasInfo()
+{
+#if SPRMAKE_ATLAS_COUNT >= 2
+
+    SPRMAKE_ATLAS_INFO Out = (SPRMAKE_ATLAS_INFO)0;
+
+    for (int i = 0; i < SPRMAKE_ATLAS_COUNT; ++i)
+    {
+        if (i == SprMake_AtlasIndex)
+        {
+            Out = SprMake_GetAtlasInfoCore(i);
+        }
+    }
+
+    return Out;
+
+#else // SPRMAKE_ATLAS_COUNT >= 2
+
+    return SprMake_GetAtlasInfoCore(0);
+
+#endif // SPRMAKE_ATLAS_COUNT >= 2
 }
 
 //--------------------------------------
